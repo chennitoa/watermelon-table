@@ -77,7 +77,7 @@ def create_tables() -> None:
     CREATE TABLE IF NOT EXISTS users (
         user_id INT UNSIGNED AUTO_INCREMENT,
         username VARCHAR(255) NOT NULL,
-        email VARCHAR(255), NOT NULL,
+        email VARCHAR(255) NOT NULL,
         description TEXT,
         profile_picture LONGBLOB,
         interest1 VARCHAR(255),
@@ -86,7 +86,7 @@ def create_tables() -> None:
         gender VARCHAR(255),
         PRIMARY KEY (user_id),
         UNIQUE (username),
-        UNIQUE (email),
+        UNIQUE (email)
     )    
     '''
 
@@ -96,7 +96,7 @@ def create_tables() -> None:
         username VARCHAR(255) NOT NULL,
         password VARCHAR(255) NOT NULL,
         PRIMARY KEY (username),
-        FOREIGN KEY (username) REFERENCES profile(username),
+        FOREIGN KEY (username) REFERENCES users(username)
     )
     '''
 
@@ -109,13 +109,13 @@ def create_tables() -> None:
         title VARCHAR(255),
         description TEXT,
         PRIMARY KEY (listing_id),
-        FOREIGN KEY (user_id) REFERENCES users(user_id),
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
     )
     '''
     
     # Execute queries
-    conn.execute(user_details_query)
-    conn.execute(authentication_query)
-    conn.execute(listings_query)
+    cursor.execute(user_details_query)
+    cursor.execute(authentication_query)
+    cursor.execute(listings_query)
 
     conn.close()
