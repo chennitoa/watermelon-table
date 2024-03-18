@@ -26,3 +26,7 @@ class Listing(BaseModel):
 class UpdateListing(BaseModel):
     title: Optional[str]
     description: Optional[str]
+
+class SearchListings(BaseModel):
+    title: Optional[str]
+    description: Optional[str]
