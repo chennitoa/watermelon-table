@@ -1,12 +1,21 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import Typography from '@mui/material/Typography';
 import HeaderRAF from './HeaderRAF';
 import { useLocation } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
+import StarRating from './StarRating';
 
 const UserProfile = () => {
     const location = useLocation();
     const userData = location.state.userData;
+
+    // State to manage the user's rating
+    const [userRating, setUserRating] = useState(0);
+
+    // Function to handle when the user rates
+    const handleRatingChange = (newRating) => {
+        setUserRating(newRating);
+    };
 
     return (
         <div>
@@ -37,6 +46,13 @@ const UserProfile = () => {
                                 <li><Typography variant="subtitle1">3. {userData.interest3}</Typography></li>
                             </ul>
                             <Typography variant="subtitle1">Gender: {userData.gender}</Typography>
+                        </div>
+                    </Grid>
+                    {/* Rating */}
+                    <Grid item xs={12}>
+                        <Typography variant="h5">Rating</Typography>
+                        <div style={{ marginTop: '10px' }}>
+                            <StarRating value={userRating} onRatingChange={handleRatingChange} />
                         </div>
                     </Grid>
                 </Grid>

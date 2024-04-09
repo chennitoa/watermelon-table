@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import HeaderRAF from './HeaderRAF';
+import SearchBar from './SearchBar';
 
 export default function ListingsPage() {
   const [showForm, setShowForm] = useState(false);
@@ -26,9 +27,15 @@ export default function ListingsPage() {
     }
   };
 
+    // Add handleSearchResults function
+  const handleSearchResults = (results) => {
+    setListings(results);
+  };
+
   return (
     <div>
       <HeaderRAF />
+      <SearchBar onSearchResults={handleSearchResults}/>
       {!showForm && (
         <Button variant="contained" color="primary" onClick={() => setShowForm(true)}>
           Create Listing
