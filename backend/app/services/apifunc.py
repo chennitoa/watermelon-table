@@ -1,7 +1,10 @@
-from db.database import connect
 from fastapi import HTTPException
+
 from datetime import datetime
-import api.models as models
+
+from .db_connect import connect
+from ..models import models
+
 
 # Create a new account
 def signup(user: models.Profile, bcrypt_context):

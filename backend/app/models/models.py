@@ -1,6 +1,8 @@
 from pydantic import BaseModel, Field
-from typing import Dict, Optional
+
 from datetime import datetime
+from typing import Dict, Optional
+
 
 class Profile(BaseModel):
     first_name: str
@@ -14,6 +16,7 @@ class Profile(BaseModel):
     interest3: str
     gender: str
 
+
 class UpdateProfile(BaseModel):
     username: Optional[str]
     email: Optional[str]
@@ -23,23 +26,28 @@ class UpdateProfile(BaseModel):
     interest2: Optional[str]
     interest3: Optional[str]
 
+
 class Listing(BaseModel):
     user_id: int
     date: datetime
     title: str
     description: str
 
+
 class UpdateListing(BaseModel):
     title: Optional[str]
     description: Optional[str]
+
 
 class SearchListings(BaseModel):
     title: Optional[str]
     description: Optional[str]
 
+
 class Token(BaseModel):
     access_token: str
     token_type: str
+
 
 class Auth(BaseModel):
     username: str
