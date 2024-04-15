@@ -1,16 +1,22 @@
 version: '3'
 services:
-  frontend:
-    build: 
-      context: ./frontend
-      target: release  # Target the release stage of the Dockerfile
-    ports:
-      - "42069:80"  # Map port 80 of the container to port 42069 of the host
-    depends_on:
-      - middleware
+  # frontend:
+  #   build: 
+  #     context: ./frontend
+  #     target: release  # Target the release stage of the Dockerfile
+  #   ports:
+  #     - "80080:80"  # Map port 80 of the container to port 80080 of the host
+  #   depends_on:
+  #     - backend
 
-  middleware:
-    build: ./middleware
+  backend:
+    build: ./backend
+    environment:
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DB=${MYSQL_DB}
+      - SECRET_KEY=${SECRET_KEY}
     ports:
       - "5001:5000"
     depends_on:
@@ -20,6 +26,11 @@ services:
     container_name: db
     build: ./database
     restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DB=${MYSQL_DB}
     ports:
      - "1434:1435" 
   
