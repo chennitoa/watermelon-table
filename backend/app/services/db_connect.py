@@ -19,7 +19,7 @@ def connect() -> mysql.connector.MySQLConnection:
         A connection to the MySQL server.
     """
     try:
-        db = mysql.connector.connect(
+        conn = mysql.connector.connect(
             host=MYSQL_HOST,
             user=MYSQL_USER,
             password=MYSQL_PASSWORD,
@@ -32,6 +32,9 @@ def connect() -> mysql.connector.MySQLConnection:
         elif err.errno == mysql.connector.errorcode.ER_ACCESS_DENIED_ERROR:
             # Bad username / password
             raise Exception('Bad username or password.')
+        else:
+            # Other error
+            raise Exception(f'Error: {err.msg}')
 
     # Return the good connection
-    return db
+    return conn
