@@ -5,7 +5,6 @@ from passlib.context import CryptContext
 from datetime import datetime
 
 from .db_connect import connect
-from ..services import apifunc
 
 def get_auth(username: str):
     # Connect to SQL database
