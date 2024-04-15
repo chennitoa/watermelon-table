@@ -1,9 +1,8 @@
-
-from db.database import connect
+from services.database import connect
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
-from api import models
+from backend.app.models import models
 from datetime import datetime
 
 app = FastAPI()
