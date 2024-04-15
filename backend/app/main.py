@@ -3,8 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from typing import Union
 
-print(__name__)
-
 from .models import models
 from .routers import auth
 from .services import profile_manager, listing_manager
