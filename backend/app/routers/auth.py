@@ -8,10 +8,8 @@ import os
 from typing import Annotated
 
 from ..models import models
-from ..services import apifunc, oauth
+from ..services import profile_manager, listing_manager, oauth
 
-
-dotenv.load_dotenv()
 
 router = APIRouter(
     prefix='/auth',
@@ -28,7 +26,7 @@ oauth2_bearer = OAuth2PasswordBearer(tokenUrl="auth/login/")
 # Sign up / Create a profile
 @router.post("/sign-up/")
 async def signup(user: models.Profile):
-    return apifunc.signup(user, bcrypt_context)
+    return profile_manager.signup(user, bcrypt_context)
 
 
 # Log in with username and password
@@ -49,6 +47,6 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
         username = payload.get('sub')
         if not username:
             raise HTTPException(status_code=401, detail="Failed to authorize user.")
-        return apifunc.get_profile(username)
+        return profile_manager.get_profile(username)
     except:
         raise HTTPException(status_code=401, detail="Failed to authorize user.")
