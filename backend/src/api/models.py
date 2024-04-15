@@ -1,21 +1,27 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import Dict, Optional
 from datetime import datetime
 
 class Profile(BaseModel):
     first_name: str
     last_name: str
+    username: str
     email: str
     description: str
     profile_picture: str
-    interests: List[str] = Field(..., max_items=3)
+    interest1: str
+    interest2: str
+    interest3: str
+    gender: str
 
 class UpdateProfile(BaseModel):
     username: Optional[str]
     email: Optional[str]
     description: Optional[str]
     profile_picture: Optional[str]
-    interests: Optional[List[str]] = Field(..., max_items=3)
+    interest1: Optional[str]
+    interest2: Optional[str]
+    interest3: Optional[str]
 
 class Listing(BaseModel):
     user_id: int
@@ -30,3 +36,11 @@ class UpdateListing(BaseModel):
 class SearchListings(BaseModel):
     title: Optional[str]
     description: Optional[str]
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class Auth(BaseModel):
+    username: str
+    password: str
