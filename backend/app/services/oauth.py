@@ -1,9 +1,11 @@
-import api.apifunc as apifunc
-from datetime import datetime
+from fastapi import HTTPException
 from jose import jwt
 from passlib.context import CryptContext
-from db.database import connect
-from fastapi import HTTPException
+
+from datetime import datetime
+
+from .db_connect import connect
+from ..services import apifunc
 
 def get_auth(username: str):
     # Connect to SQL database

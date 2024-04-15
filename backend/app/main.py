@@ -1,9 +1,11 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from api import models, auth
-import api.apifunc as apifunc
+
 from typing import Union
-from fastapi import HTTPException, Depends
+
+from .models import models
+from .routers import auth
+from .services import apifunc
 
 app = FastAPI()
 
