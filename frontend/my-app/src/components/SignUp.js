@@ -11,6 +11,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { createProfile } from "../client";
 
 function GenderSelect() {
   return (
@@ -103,34 +104,37 @@ function ProfilePictureUpload({ setPreviewUrl }) {
 }
 
 function SignUp() {
-  const [userData, setUserData] = useState(null);
   const [formValid, setFormValid] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState(null); // State to store previewUrl
+  const [previewUrl, setPreviewUrl] = useState(""); // State to store previewUrl
   const navigate = useNavigate(); // Get history object
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    // Assuming you're storing the image file in a variable called uploadedImage
 
-    setUserData({
-      firstName: data.get('firstName'),
-      lastName: data.get('lastName'),
-      username: data.get('username'),
-      email: data.get('email'),
-      password: data.get('password'),
-      description: data.get('description'),
-      picture: previewUrl, 
-      interest1: data.get('interest1'),
-      interest2: data.get('interest2'),
-      interest3: data.get('interest3'),
-      gender: data.get('gender'),
-    });
+    // Updated userData object to match the new API request format
+    const userData = {
+        first_name: data.get('first_name'),
+        last_name: data.get('last_name'),
+        username: data.get('username'),
+        password: data.get('password'),
+        email: data.get('email'),
+        description: data.get('description'),
+        profile_picture: previewUrl, // Assuming the image URL is what the API expects
+        interest1: data.get('interest1'),
+        interest2: data.get('interest2'),
+        interest3: data.get('interest3'),
+        gender: data.get('gender'),
+    };
 
-    // Redirect to user profile
-    if (userData)
-      // need to save userData into the database somehow, post it using one of those calls?
-      navigate(`/profile/${data.get('username')}`, { state: { userData } });
+    try {
+        const response = await createProfile(userData);
+        console.log('Profile created:', response);
+        navigate(`/profile/${userData.username}`);
+    } catch (error) {
+        console.error('Failed to create profile:', error);
+        // Handle errors (e.g., show error message to user)
+    }
   };
   
 
@@ -175,10 +179,10 @@ function SignUp() {
               <Grid item xs={12} sm={6}>
                 <TextField
                   autoComplete="given-name"
-                  name="firstName"
+                  name="first_name"
                   required
                   fullWidth
-                  id="firstName"
+                  id="first_name"
                   label="First Name"
                   autoFocus
                 />
@@ -187,9 +191,9 @@ function SignUp() {
                 <TextField
                   required
                   fullWidth
-                  id="lastName"
+                  id="last_name"
                   label="Last Name"
-                  name="lastName"
+                  name="last_name"
                   autoComplete="family-name"
                 />
               </Grid>

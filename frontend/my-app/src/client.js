@@ -1,10 +1,8 @@
 // file for where the API calls will happen when linking the FastAPI backend to the frontend
 
-// client/client.js
-
 async function createProfile(profileData) {
     try {
-        const response = await fetch('http://localhost:8000/profiles/', {
+        const response = await fetch('http://localhost:8000/auth/sign-up/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -19,6 +17,8 @@ async function createProfile(profileData) {
         throw error;
     }
 }
+
+
 
 async function updateProfile(profileId, updateData) {
     try {
@@ -48,6 +48,20 @@ async function deleteProfile(profileId) {
         return data;
     } catch (error) {
         console.error('Error deleting profile:', error);
+        throw error;
+    }
+}
+
+async function getProfile(identifier) {
+    try {
+        const response = await fetch(`http://localhost:8000/profiles/${identifier}`, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        console.log('Profile retrieval response:', data);
+        return data;
+    } catch (error) {
+        console.error('Error retrieving profile:', error);
         throw error;
     }
 }
@@ -102,4 +116,45 @@ async function deleteListing(listingId) {
     }
 }
 
-export { createProfile, updateProfile, deleteProfile, createListing, updateListing, deleteListing };
+async function getListing(listingId) {
+    try {
+        const response = await fetch(`http://localhost:8000/listings/${listingId}`, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        console.log('Listing retrieval response:', data);
+        return data;
+    } catch (error) {
+        console.error('Error retrieving listing:', error);
+        throw error;
+    }
+}
+
+async function login(username, password) {
+    try {
+        const urlEncodedData = new URLSearchParams();
+        urlEncodedData.append('username', username);
+        urlEncodedData.append('password', password);
+
+        const response = await fetch('http://localhost:8000/auth/login/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: urlEncodedData,
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            console.log('Login successful:', data);
+            return data;
+        } else {
+            throw new Error(data.message || 'Failed to login');
+        }
+    } catch (error) {
+        console.error('Error logging in:', error);
+        throw error;
+    }
+}
+
+export { createProfile, updateProfile, deleteProfile, getProfile, createListing, updateListing, deleteListing, getListing, login };

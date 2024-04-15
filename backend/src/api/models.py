@@ -6,6 +6,7 @@ class Profile(BaseModel):
     first_name: str
     last_name: str
     username: str
+    password: str
     email: str
     description: str
     profile_picture: str
