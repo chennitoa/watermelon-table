@@ -1,11 +1,16 @@
-CREATE DATABASE IF NOT EXISTS rent_a_friend;
-USE rent_a_friend;
+CREATE DATABASE IF NOT EXISTS rent_a_lackey;
+USE rent_a_lackey;
+
+-- Create user to be used by the backend
+CREATE USER 'user'@'localhost' IDENTIFIED BY '1234'
 
 -- Users table, stores user information
 CREATE TABLE IF NOT EXISTS user_information (
     user_id INT UNSIGNED AUTO_INCREMENT,
     username VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
     PRIMARY KEY (user_id),
     UNIQUE (username),
     UNIQUE (email)
