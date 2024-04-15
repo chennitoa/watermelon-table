@@ -2,7 +2,8 @@ CREATE DATABASE IF NOT EXISTS rent_a_lackey;
 USE rent_a_lackey;
 
 -- Create user to be used by the backend
-CREATE USER 'user'@'localhost' IDENTIFIED BY '1234'
+CREATE USER 'bob'@'%' IDENTIFIED BY '1234';
+GRANT ALL PRIVILEGES ON rent_a_lackey.* TO 'bob'@'%';
 
 -- Users table, stores user information
 CREATE TABLE IF NOT EXISTS user_information (
@@ -34,7 +35,7 @@ CREATE TABLE IF NOT EXISTS auth (
     username VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     PRIMARY KEY (username),
-    FOREIGN KEY (username) REFERENCES users(username)
+    FOREIGN KEY (username) REFERENCES user_information(username)
 );
 
 -- Listing table, stores listing information
@@ -45,5 +46,5 @@ CREATE TABLE IF NOT EXISTS listing (
     title VARCHAR(255),
     description TEXT,
     PRIMARY KEY (listing_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    FOREIGN KEY (user_id) REFERENCES user_information(user_id)
 );
