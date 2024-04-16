@@ -47,7 +47,7 @@ class UpdateProfile(BaseModel):
 
 
 class Listing(BaseModel):
-    username: int
+    username: str
     title: str
     description: Optional[str]
 
@@ -60,7 +60,7 @@ class UpdateListing(BaseModel):
 
 class SearchListings(BaseModel):
     listing_id: Optional[int]
-    username: Optional[int]
+    username: Optional[str]
     title: Optional[str]
     description: Optional[str]
 
