@@ -82,9 +82,9 @@ def get_user(identifier: int | str):
 
         # Check if input is a user ID or a username
         if identifier.isnumeric():
-            query = "SELECT * FROM users WHERE user_id = %s"
+            query = "SELECT * FROM user_information WHERE user_id = %s"
         elif isinstance(identifier, str):
-            query = "SELECT * FROM users WHERE username = %s"
+            query = "SELECT * FROM user_information WHERE username = %s"
         else:
             return {"status": "failure"}
 
