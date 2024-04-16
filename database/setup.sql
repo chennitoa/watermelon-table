@@ -1,4 +1,3 @@
-CREATE DATABASE IF NOT EXISTS rent_a_lackey;
 USE rent_a_lackey;
 
 -- Users table, stores user information
