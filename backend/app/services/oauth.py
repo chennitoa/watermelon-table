@@ -1,40 +1,41 @@
-from fastapi import HTTPException
 from jose import jwt
 from passlib.context import CryptContext
 
 from datetime import datetime
 
-from .db_connect import connect
+from .db.auth_manager import get_auth
 
-def get_auth(username: str):
-    # Connect to SQL database
-    conn = connect()
-    cursor = conn.cursor(dictionary=True)
 
-    query = "SELECT * FROM authentication WHERE username = %s"
+def authenticate(username: str, password: str, bcrypt_context: CryptContext) -> bool:
+    """Authenticates the user by checking if the username and password are correct.
 
-    cursor.execute(query, (username,))
-    auth = cursor.fetchone()
+    Args:
+        username (str): The username to identify.
+        password (str): The password to authenticate.
+    
+    Returns:
+        A dict with two keys, "status" and "message". Status is the status
+        of the user creation, either "success" or "failure".
+    """
+    authentication = get_auth(username)
 
-    if not auth:
-        raise HTTPException(status_code=404, detail="User does not exist.")
+    if authentication['status'] != "success":
+        return False  # Some kind of error happened trying to fetch the authentication
+    elif not bcrypt_context.verify(password, authentication['result']['password']):
+        return False  # The password is incorrect
+    else:
+        return True
 
-    conn.close()
 
-    return auth
+def create_access_token(username: str, secret: str, algo: str) -> str:
+    """Creates a token to log in.
 
-# Authenticates the user by checking if the username and password are correct
-def authenticate(username: str, password: str, bcrypt_context: CryptContext):
-    user = get_auth(username)
-    # Check if user exists in database
-    if not user:
-        return False
-    # Check if password is correct
-    if not bcrypt_context.verify(password, user['password']):
-        return False
-    return user
+    Args:
+        username (str): The username of the user.
+        password (str): The password of the user.
 
-# Creates a token to log in
-def create_access_token(username: str, secret: str, algo: str):
+    Returns:
+        The access token.
+    """
     return jwt.encode({'sub': username, 'iat': datetime.now()},
                       secret, algorithm=algo)
