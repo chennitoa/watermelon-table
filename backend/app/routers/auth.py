@@ -7,7 +7,8 @@ import os
 from typing import Annotated
 
 from ..models import models
-from ..services import profile_manager, listing_manager, oauth
+from ..services import oauth
+from ..services.db import profile_manager, user_manager
 
 
 router = APIRouter(
@@ -22,15 +23,19 @@ bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl="auth/login/")
 
 
-# Sign up / Create a profile
 @router.post("/sign-up/")
-async def signup(user: models.Profile):
-    return profile_manager.signup(user, bcrypt_context)
+async def signup(user: models.SignupDetails):
+    """Create a user."""
+    user_manager.create_user(user.username, user.email, user.first_name, user.last_name,
+                             user.password, bcrypt_context)
+    profile_manager.create_profile(user.username)  # Create a default empty profile
+
+    return {"status": "success"}
 
 
-# Log in with username and password
 @router.post("/login/", response_model=models.Token)
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+    """Log in with username and password."""
     user = oauth.authenticate(form_data.username, form_data.password, bcrypt_context)
     if not user:
         raise HTTPException(status_code=401, detail="Failed to authorize user.")
@@ -39,13 +44,13 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     return {'access_token': token, 'token_type': 'bearer'}
 
 
-# Function to get the current signed-in user
 async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
+    """Get the current signed-in user."""
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username = payload.get('sub')
         if not username:
             raise HTTPException(status_code=401, detail="Failed to authorize user.")
-        return profile_manager.get_profile(username)
+        return user_manager.get_user(username)
     except:
         raise HTTPException(status_code=401, detail="Failed to authorize user.")
