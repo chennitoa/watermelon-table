@@ -76,6 +76,8 @@ def create_tables() -> None:
     user_details_query = '''
     CREATE TABLE IF NOT EXISTS users (
         user_id INT UNSIGNED AUTO_INCREMENT,
+        first_name VARCHAR(255) NOT NULL,
+        last_name VARCHAR(255) NOT NULL,
         username VARCHAR(255) NOT NULL,
         email VARCHAR(255) NOT NULL,
         description TEXT,

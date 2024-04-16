@@ -66,6 +66,25 @@ async function getProfile(identifier) {
     }
 }
 
+async function getCurrentProfile() {
+    try {
+        const token = localStorage.getItem('token'); // Assuming the token is stored in localStorage
+        const response = await fetch('http://localhost:8000/profiles/', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+                'Content-Type': 'application/json'
+            },
+        });
+        const data = await response.json();
+        console.log('Profile retrieval response:', data);
+        return data;
+    } catch (error) {
+        console.error('Error retrieving profile:', error);
+        throw error;
+    }
+}
+
 async function createListing(listingData) {
     try {
         const response = await fetch('http://localhost:8000/listings/', {
@@ -130,6 +149,20 @@ async function getListing(listingId) {
     }
 }
 
+async function getAllListings() {
+    try {
+        const response = await fetch(`http://localhost:8000/listings/`, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        console.log('Listing retrieval response:', data);
+        return data;
+    } catch (error) {
+        console.error('Error retrieving listing:', error);
+        throw error;
+    }
+}
+
 async function login(username, password) {
     try {
         const urlEncodedData = new URLSearchParams();
@@ -157,4 +190,4 @@ async function login(username, password) {
     }
 }
 
-export { createProfile, updateProfile, deleteProfile, getProfile, createListing, updateListing, deleteListing, getListing, login };
+export { createProfile, updateProfile, deleteProfile, getProfile, getCurrentProfile, createListing, updateListing, deleteListing, getListing, getAllListings, login };

@@ -62,3 +62,8 @@ def delete_listing(listing_id: int):
 @app.get("/listings/{listing_id}")
 def get_listing(listing_id: int):
     return apifunc.get_listing(listing_id)
+
+# Get all existing listings
+@app.get("/listings/")
+def get_all_listings():
+    return apifunc.get_all_listings()

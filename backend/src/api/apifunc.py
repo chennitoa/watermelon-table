@@ -278,3 +278,21 @@ def get_listing(listing_id: int):
     conn.close()
 
     return listing
+
+# Get all existing listings
+def get_all_listings():
+    conn = connect()
+    cursor = conn.cursor(dictionary=True)
+    
+    query = '''SELECT listing.*, users.username 
+    FROM listing 
+    JOIN users ON listing.user_id = users.user_id'''
+    
+    cursor.execute(query)
+    listings = cursor.fetchall()
+    
+    if not listings:
+        raise HTTPException(status_code=404, detail="No listings found.")
+    
+    conn.close()
+    return listings
