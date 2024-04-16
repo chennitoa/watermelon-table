@@ -38,12 +38,12 @@ export default function Hero() {
               variant="h1"
               color="primary.main"
             >
-              Friend
+              Lackey
             </Typography>
           </Typography>
           <Typography variant="body1" textAlign="center" color="text.secondary">
-            Feeling lonely? Wanting to do something with a friend but you don't have any?<br />
-            Use Rent a Friend to do fun tasks with others so you feel better about yourself.
+            Feeling lonely? Wanting to do something with a lackey but you don't have any?<br />
+            Use Rent a Lackey to do fun tasks with others so you feel better about yourself.
           </Typography>
           <Stack direction="row" spacing={1} alignSelf="center" pt={2}>
             <Button 

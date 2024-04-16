@@ -166,7 +166,7 @@ function SignUp() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Rent a Friend - Sign up
+            Rent a Lackey - Sign up
           </Typography>
           <Box
             component="form"

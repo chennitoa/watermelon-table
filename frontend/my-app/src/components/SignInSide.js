@@ -81,7 +81,7 @@ export default function SignInSide() {
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-              Rent a Friend - Sign in
+              Rent a Lackey - Sign in
             </Typography>
             <Box
               component="form"

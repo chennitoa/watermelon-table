@@ -13,7 +13,7 @@ function Copyright() {
   return (
     <Typography variant="body2" color="text.secondary" mt={1}>
       {'Copyright © '}
-      <Link href="">Rent a Friend&nbsp;</Link>
+      <Link href="">Rent a Lackey&nbsp;</Link>
       {new Date().getFullYear()}
     </Typography>
   );
