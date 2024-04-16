@@ -1,7 +1,6 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
-from datetime import datetime
-from typing import Dict, Optional
+from typing import Optional
 
 
 class SignupDetails(BaseModel):
@@ -48,8 +47,7 @@ class UpdateProfile(BaseModel):
 
 
 class Listing(BaseModel):
-    user_id: int
-    date: datetime
+    username: int
     title: str
     description: Optional[str]
 

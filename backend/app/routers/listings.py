@@ -13,7 +13,8 @@ router = APIRouter(
 # Create new listing
 @router.post("/")
 def create_listing(listing: models.Listing):
-    return listing_manager.create_listing(listing)
+    return listing_manager.create_listing(listing.username, listing.title,
+                                          listing.description)
 
 
 # Update an existing listing
