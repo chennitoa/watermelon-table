@@ -1,10 +1,6 @@
 CREATE DATABASE IF NOT EXISTS rent_a_lackey;
 USE rent_a_lackey;
 
--- Create user to be used by the backend
-CREATE USER 'bob'@'%' IDENTIFIED BY '1234';
-GRANT ALL PRIVILEGES ON rent_a_lackey.* TO 'bob'@'%';
-
 -- Users table, stores user information
 CREATE TABLE IF NOT EXISTS user_information (
     user_id INT UNSIGNED AUTO_INCREMENT,
@@ -20,14 +16,16 @@ CREATE TABLE IF NOT EXISTS user_information (
 -- Profiles table, stores profile information
 CREATE TABLE IF NOT EXISTS profiles (
     user_id INT UNSIGNED,
-    description TEXT,
+    profile_description TEXT,
     profile_picture LONGBLOB,
     interest1 VARCHAR(255),
     interest2 VARCHAR(255),
     interest3 VARCHAR(255),
     gender VARCHAR(255),
     PRIMARY KEY (user_id),
-    FOREIGN KEY (user_id) REFERENCES user_information(user_id)
+    FOREIGN KEY (user_id)
+        REFERENCES user_information(user_id)
+        ON DELETE CASCADE
 );
 
 -- Authentication table, stores authentication information
@@ -35,16 +33,21 @@ CREATE TABLE IF NOT EXISTS auth (
     username VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     PRIMARY KEY (username),
-    FOREIGN KEY (username) REFERENCES user_information(username)
+    FOREIGN KEY (username)
+        REFERENCES user_information(username)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 -- Listing table, stores listing information
-CREATE TABLE IF NOT EXISTS listing (
+CREATE TABLE IF NOT EXISTS listings (
     listing_id INT UNSIGNED AUTO_INCREMENT,
     user_id INT UNSIGNED,
-    date DATETIME,
-    title VARCHAR(255),
-    description TEXT,
+    date DATETIME NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    listing_description TEXT,
     PRIMARY KEY (listing_id),
-    FOREIGN KEY (user_id) REFERENCES user_information(user_id)
+    FOREIGN KEY (user_id)
+        REFERENCES user_information(user_id)
+        ON DELETE CASCADE
 );
