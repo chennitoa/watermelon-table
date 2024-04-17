@@ -57,7 +57,7 @@ def create_user(username: str, email: str, first_name: str, last_name: str,
         conn.commit()
 
     return {
-        "message": f"New profile created for user {username}.",
+        "message": f"Successfully created user {username}.",
         "status": "success"
     }
 
