@@ -1,13 +1,11 @@
 version: '3'
 services:
-  # frontend:
-  #   build: 
-  #     context: ./frontend
-  #     target: release  # Target the release stage of the Dockerfile
-  #   ports:
-  #     - "80080:80"  # Map port 80 of the container to port 80080 of the host
-  #   depends_on:
-  #     - backend
+  frontend:
+    build: ./frontend
+    ports:
+      - "3001:3000"  # Map port 3000 of the container to port 3001 of the host
+    depends_on:
+      - backend
 
   backend:
     build: ./backend
