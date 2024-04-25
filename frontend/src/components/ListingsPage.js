@@ -1,34 +1,80 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import HeaderRAF from './HeaderRAF';
+import SearchBar from './SearchBar';
+import { getUser, createListing, getListing } from '../client';
 
 export default function ListingsPage() {
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [listings, setListings] = useState([]);
+  const [currentUserId, setUserId] = useState(0);
 
-  const handleCreateListing = () => {
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const profile = await getUser(); 
+        // console.log(profile.Profile);
+        setUserId(profile.Profile.user_id);
+        console.log(currentUserId);
+      } catch (error) {
+        console.error('Failed to fetch profile:', error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  useEffect(() => {
+    const fetchListings = async () => {
+      try {
+        const allListings = await getListing();
+        setListings(allListings);
+      } catch (error) {
+        console.error('Failed to fetch listings:', error);
+      }
+    };
+
+    fetchListings();
+  }, []); // Empty dependency array to run only once on component mount
+
+  const handleCreateListing = async () => {
+    // login, get current profile, get the user id from the profile
+    // include it in the listing when posting it
     if (title.trim() !== '' && description.trim() !== '') {
-      const newListing = { 
+      const newListing = {
+        user_id: currentUserId,
         title, 
         description,
-        timestamp: new Date().toLocaleString() // Adding timestamp
+        date: new Date().toISOString() // Adding timestamp
       };
-      setListings([...listings, newListing]);
-      setTitle('');
-      setDescription('');
-      setShowForm(false);
+      try {
+        await createListing(newListing);
+        setListings([...listings, newListing]); // Assuming the response contains the new listing
+        setTitle('');
+        setDescription('');
+        setShowForm(false);
+      } catch (error) {
+        console.error('Failed to create listing:', error);
+        alert('Failed to create listing. Please try again.');
+      }
     } else {
       alert('Please provide both the title and description.');
     }
   };
 
+    // Add handleSearchResults function
+  const handleSearchResults = (results) => {
+    setListings(results);
+  };
+
   return (
     <div>
       <HeaderRAF />
+      <SearchBar onSearchResults={handleSearchResults}/>
       {!showForm && (
         <Button variant="contained" color="primary" onClick={() => setShowForm(true)}>
           Create Listing
@@ -64,9 +110,10 @@ export default function ListingsPage() {
       <Box mt={2}>
         {listings.map((listing, index) => (
           <Box key={index} border={1} p={2} mt={1}>
+            <div>Posted by: {listing.username}</div> {/* Displaying the username */}
             <div>Title: {listing.title}</div>
             <div>Description: {listing.description}</div>
-            <div>Timestamp: {listing.timestamp}</div> {/* Displaying timestamp */}
+            <div>Date: {listing.date}</div> {/* Displaying date */}
           </Box>
         ))}
       </Box>

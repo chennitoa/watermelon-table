@@ -13,22 +13,32 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
+import { login } from '../client';
 
 const defaultTheme = createTheme();
 
 export default function SignInSide() {
   const navigate = useNavigate();
   const [formValid, setFormValid] = React.useState(false); // State to track form validity
+  const [errorMessage, setErrorMessage] = React.useState('');
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-    // Redirect to start page
-    navigate('/listings');
+    const username = data.get('username');
+    const password = data.get('password');
+
+    console.log(username);
+    console.log(password);
+  
+    try {
+      const result = await login(username, password);
+      localStorage.setItem('token', result.access_token);
+      navigate('/listings');
+    } catch (error) {
+      console.error('Login failed:', error);
+      setErrorMessage(error.message);
+    }
   };
 
   // Function to handle input change and check form validity
@@ -71,7 +81,7 @@ export default function SignInSide() {
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-              Rent a Friend - Sign in
+              Rent a Lackey - Sign in
             </Typography>
             <Box
               component="form"
@@ -114,6 +124,11 @@ export default function SignInSide() {
               >
                 Sign In
               </Button>
+              {errorMessage && (
+                <Typography color="error" sx={{ mt: 2 }}>
+                  {errorMessage}
+                </Typography>
+              )}
               <Grid container>
                 {/* <Grid item xs>
                   <Link href="#" variant="body2">
@@ -133,4 +148,3 @@ export default function SignInSide() {
     </ThemeProvider>
   );
 }
-

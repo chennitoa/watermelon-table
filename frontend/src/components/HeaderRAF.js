@@ -25,7 +25,7 @@ function HeaderRAF() {
         >
           Rent a&nbsp;
           <Typography component="span" variant="h1" color="primary.main">
-            Friend
+            Lackey
           </Typography>
         </Typography>
       </Typography>
