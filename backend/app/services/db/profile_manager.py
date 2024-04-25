@@ -129,7 +129,7 @@ def update_profile(username: str, profile_description: str = None, profile_pictu
         interest1 = COALESCE(%s, interest1),
         interest2 = COALESCE(%s, interest2),
         interest3 = COALESCE(%s, interest3),
-        gender = COALESCE(%s, gender),
+        gender = COALESCE(%s, gender)
         WHERE user_id = %s
         '''
 

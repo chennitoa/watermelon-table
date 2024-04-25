@@ -24,7 +24,7 @@ def authenticate(username: str, password: str, bcrypt_context: CryptContext) -> 
     elif not bcrypt_context.verify(password, authentication['result']['password']):
         return False  # The password is incorrect
     else:
-        return True
+        return authentication['result']
 
 
 def create_access_token(username: str, secret: str, algo: str) -> str:
