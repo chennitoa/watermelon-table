@@ -98,9 +98,23 @@ async function updateUser(updateData) {
     }
 }
 
-async function getUser(username) {
+async function getUserWithUsername(username) {
     try {
-        const response = await fetch(`http://localhost:5001/user/${username}`, {
+        const response = await fetch(`http://localhost:5001/user/usernameget/${username}`, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        console.log('User retrieval response:', data);
+        return data;
+    } catch (error) {
+        console.error('Error retrieving profile:', error);
+        throw error;
+    }
+}
+
+async function getUserWithUserId(user_id) {
+    try {
+        const response = await fetch(`http://localhost:5001/user/idget/${user_id}`, {
             method: 'GET',
         });
         const data = await response.json();
@@ -201,4 +215,4 @@ async function getListing(searchCriteria) {
     }
 }
 
-export { createUser, updateProfile, getProfile, updateUser, getUser, getCurrentUser, createListing, updateListing, deleteListing, getListing, login };
+export { createUser, updateProfile, getProfile, updateUser, getUserWithUsername, getUserWithUserId, getCurrentUser, createListing, updateListing, deleteListing, getListing, login };
