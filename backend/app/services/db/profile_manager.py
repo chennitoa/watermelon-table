@@ -28,7 +28,7 @@ def create_profile(username: str, profile_description: str = None, profile_pictu
         cursor = conn.cursor()
 
         # Check if user exists and get the user id
-        user_details = get_user(username)
+        user_details = get_user(username, is_username=True)
         if user_details['status'] == "failure":
             return {
                 "message": f"Failed to find user {username}",
@@ -75,7 +75,7 @@ def get_profile(username: str):
         cursor = conn.cursor(dictionary=True)
 
         # Check if user exists and get the user id
-        user_details = get_user(username)
+        user_details = get_user(username, is_username=True)
         if user_details['status'] == "failure":
             return {
                 "message": f"Failed to find user {username}",
@@ -115,7 +115,7 @@ def update_profile(username: str, profile_description: str = None, profile_pictu
         cursor = conn.cursor()
 
         # Check if user exists and get the user id
-        user_details = get_user(username)
+        user_details = get_user(username, is_username=True)
         if user_details['status'] != "success":
             return {
                 "message": f"Failed to find user {username}",
@@ -166,7 +166,7 @@ def delete_profile(username: str):
         cursor = conn.cursor()
 
         # Check if user exists and get the user id
-        user_details = get_user(username)
+        user_details = get_user(username, is_username=True)
         if user_details['status'] != "success":
             return {
                 "message": f"Failed to find user {username}",

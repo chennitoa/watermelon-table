@@ -22,7 +22,7 @@ def create_listing(username: str, title: str, listing_description: str = None):
         cursor = conn.cursor()
 
         # Check if user exists and get the user id
-        user_details = get_user(username)
+        user_details = get_user(username, is_username=True)
         if user_details['status'] != "success":
             return {
                 "message": f"Failed to find user {username}",
@@ -97,7 +97,7 @@ def get_listings(listing_id: int = None, username: str = None,
         values = []
 
         if username is not None:
-            user_details = get_user(username)
+            user_details = get_user(username, is_username=True)
             if user_details['status'] == "failure":
                 return {
                     "results": [],

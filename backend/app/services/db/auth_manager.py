@@ -27,7 +27,7 @@ def create_auth(username: str, password: str, bcrypt_context: CryptContext):
         hashed_password = bcrypt_context.hash(password)
 
         # Check if user exists
-        user_details = get_user(username)
+        user_details = get_user(username, is_username=True)
         if user_details['status'] == "failure":
             return {
                 "message": f"Failed to find user {username}",
@@ -103,7 +103,7 @@ def update_auth(username: str, password: str, bcrypt_context: CryptContext):
         hashed_password = bcrypt_context.hash(password)
 
         # Check if user exists
-        user_details = get_user(username)
+        user_details = get_user(username, is_username=True)
         if user_details['status'] == "failure":
             return {
                 "message": f"Failed to find user {username}",
@@ -144,7 +144,7 @@ def delete_auth(username: str):
         cursor = conn.cursor()
 
         # Check if user exists
-        user_details = get_user(username)
+        user_details = get_user(username, is_username=True)
         if user_details['status'] == "failure":
             return {
                 "message": f"Failed to find user {username}",
