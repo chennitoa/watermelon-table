@@ -27,7 +27,7 @@ def get_user_details_from_username(username: str):
 
 
 @router.get("/idget/{user_id}")
-def get_user_details_from_user_id(user_id: int):
+def get_user_details_from_user_id(user_id: str):
     """Get user details with a user id."""
     return user_manager.get_user(user_id)
 
