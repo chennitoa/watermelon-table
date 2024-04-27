@@ -20,10 +20,16 @@ def update_user_details(update: models.UpdateUserDetails):
                                     update.new_username)
 
 
-@router.get("/{username}")
-def get_user_details(username: str):
+@router.get("/usernameget/{username}")
+def get_user_details_from_username(username: str):
     """Get user details with a username."""
-    return user_manager.get_user(username)    
+    return user_manager.get_user(username, is_username=True)
+
+
+@router.get("/idget/{user_id}")
+def get_user_details_from_user_id(user_id: str):
+    """Get user details with a user id."""
+    return user_manager.get_user(user_id, is_username=False)
 
 
 @router.get("/")

@@ -62,11 +62,8 @@ def create_user(username: str, email: str, first_name: str, last_name: str,
     }
 
 
-def get_user(identifier: int | str):
+def get_user(identifier: str, is_username: bool = True):
     """Searches for a single user in the database. If found, returns all user details.
-
-    If using this function, ensure that the user ID is only used internally.
-    Do not send the user ID outside of the backend.
 
     Args:
         identifier (int | str): Either the internal user id of the user,
@@ -81,12 +78,10 @@ def get_user(identifier: int | str):
         cursor = conn.cursor(dictionary=True)
 
         # Check if input is a user ID or a username
-        if identifier.isnumeric():
-            query = "SELECT * FROM user_information WHERE user_id = %s"
-        elif isinstance(identifier, str):
+        if is_username:
             query = "SELECT * FROM user_information WHERE username = %s"
         else:
-            return {"status": "failure"}
+            query = "SELECT * FROM user_information WHERE user_id = %s"
 
         cursor.execute(query, (identifier, ))
         user_details = cursor.fetchone()
@@ -118,7 +113,7 @@ def update_user(username: str, email: str = None, first_name: str = None, last_n
         cursor = conn.cursor()
 
         # Check if user exists
-        user_details = get_user(username)
+        user_details = get_user(username, is_username=True)
         if user_details['status'] == "failure":
             return {
                 "message": f"Failed to find user {username}",
@@ -170,7 +165,7 @@ def delete_user(username: str):
         cursor = conn.cursor()
 
         # Check if user exists
-        user_details = get_user(username)
+        user_details = get_user(username, is_username=True)
         if user_details['status'] == "failure":
             return {
                 "message": f"Failed to find user {username}",
