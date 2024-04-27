@@ -4,11 +4,6 @@ import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 
-const logoStyle = {
-  width: '140px',
-  height: 'auto',
-};
-
 function Copyright() {
   return (
     <Typography variant="body2" color="text.secondary" mt={1}>
