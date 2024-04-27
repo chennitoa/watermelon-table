@@ -4,22 +4,21 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import HeaderRAF from './HeaderRAF';
 import SearchBar from './SearchBar';
-import { getUser, createListing, getListing } from '../client';
+import { getCurrentUser, createListing, getListing } from '../client';
 
 export default function ListingsPage() {
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [listings, setListings] = useState([]);
-  const [currentUserId, setUserId] = useState(0);
+  const [currentUsername, setUsername] = useState('');
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const profile = await getUser(); 
+        const user = await getCurrentUser(); 
         // console.log(profile.Profile);
-        setUserId(profile.Profile.user_id);
-        console.log(currentUserId);
+        setUsername(user.username);
       } catch (error) {
         console.error('Failed to fetch profile:', error);
       }
@@ -31,8 +30,16 @@ export default function ListingsPage() {
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const allListings = await getListing();
-        setListings(allListings);
+        const searchCriteria = {
+          "listing_id": null,
+          "username": null,
+          "title": null,
+          "description": null
+        };
+        const allListings = await getListing(searchCriteria);
+        setListings(allListings['results']);
+        console.log("listings");
+        console.log(listings);
       } catch (error) {
         console.error('Failed to fetch listings:', error);
       }
@@ -46,7 +53,7 @@ export default function ListingsPage() {
     // include it in the listing when posting it
     if (title.trim() !== '' && description.trim() !== '') {
       const newListing = {
-        user_id: currentUserId,
+        username: currentUsername,
         title, 
         description,
         date: new Date().toISOString() // Adding timestamp
@@ -108,7 +115,7 @@ export default function ListingsPage() {
         </Box>
       )}
       <Box mt={2}>
-        {listings.map((listing, index) => (
+        {listings && listings.map((listing, index) => (
           <Box key={index} border={1} p={2} mt={1}>
             <div>Posted by: {listing.username}</div> {/* Displaying the username */}
             <div>Title: {listing.title}</div>
