@@ -51,6 +51,6 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
         username = payload.get('sub')
         if not username:
             raise HTTPException(status_code=401, detail="Failed to authorize user.")
-        return user_manager.get_user(username)
+        return user_manager.get_user(username, is_username=True)
     except:
         raise HTTPException(status_code=401, detail="Failed to authorize user.")
