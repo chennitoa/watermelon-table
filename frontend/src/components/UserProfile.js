@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { getProfile, getUser } from '../client'; // Adjust the import path as necessary
+import { getProfile, getUserWithUsername } from '../client'; // Adjust the import path as necessary
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import HeaderRAF from './HeaderRAF';
@@ -17,7 +17,7 @@ const UserProfile = () => {
             try {
                 const data = await getProfile(username);
                 setProfileData(data['result']);
-                const data2 = await getUser(username);
+                const data2 = await getUserWithUsername(username);
                 setUserData(data2['result']);
 
             } catch (error) {
@@ -34,7 +34,7 @@ const UserProfile = () => {
     };
 
     if (!userData || !profileData) {
-        return <div>Loading...</div>; // Or any other loading state representation
+        return <div>User not found</div>; // Or any other loading state representation
     }
 
     return (

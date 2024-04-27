@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import HeaderRAF from './HeaderRAF';
 import SearchBar from './SearchBar';
-import { getCurrentUser, createListing, getListing } from '../client';
+import { getCurrentUser, createListing, getListing, getUserWithUserId } from '../client';
 
 export default function ListingsPage() {
   const [showForm, setShowForm] = useState(false);
@@ -18,7 +18,7 @@ export default function ListingsPage() {
       try {
         const user = await getCurrentUser(); 
         // console.log(profile.Profile);
-        setUsername(user.username);
+        setUsername(user.result.username);
       } catch (error) {
         console.error('Failed to fetch profile:', error);
       }
@@ -28,8 +28,9 @@ export default function ListingsPage() {
   }, []);
 
   useEffect(() => {
-    const fetchListings = async () => {
+    const fetchListingsAndUsernames = async () => {
       try {
+        // Fetch listings
         const searchCriteria = {
           "listing_id": null,
           "username": null,
@@ -37,30 +38,59 @@ export default function ListingsPage() {
           "description": null
         };
         const allListings = await getListing(searchCriteria);
-        setListings(allListings['results']);
-        console.log("listings");
-        console.log(listings);
+        console.log("Listings:", allListings.results);
+        setListings(allListings.results);
+  
+        // Fetch usernames for each listing
+        const updatedListings = await Promise.all(allListings.results.map(async (listing) => {
+          const userData = await getUserWithUserId(listing.user_id);
+          return { ...listing, username: userData.result.username };
+        }));
+  
+        console.log("Updated Listings:", updatedListings);
+        setListings(updatedListings);
       } catch (error) {
-        console.error('Failed to fetch listings:', error);
+        console.error('Failed to fetch data:', error);
       }
     };
-
-    fetchListings();
-  }, []); // Empty dependency array to run only once on component mount
+  
+    fetchListingsAndUsernames();
+  }, []);
+  
+  
 
   const handleCreateListing = async () => {
-    // login, get current profile, get the user id from the profile
-    // include it in the listing when posting it
     if (title.trim() !== '' && description.trim() !== '') {
       const newListing = {
         username: currentUsername,
         title, 
         description,
-        date: new Date().toISOString() // Adding timestamp
       };
       try {
+        // Create the new listing
         await createListing(newListing);
-        setListings([...listings, newListing]); // Assuming the response contains the new listing
+        
+        // Fetch the updated listings from the server
+        const updatedListingsResponse = await getListing({
+          "listing_id": null,
+          "username": null,
+          "title": null,
+          "description": null
+        });
+        
+        // Update the listings state with the updated listings fetched from the server
+        setListings(updatedListingsResponse.results);
+
+        // Fetch usernames for each listing
+        const updatedListings = await Promise.all(updatedListingsResponse.results.map(async (listing) => {
+          const userData = await getUserWithUserId(listing.user_id);
+          return { ...listing, username: userData.result.username };
+        }));
+  
+        console.log("Updated Listings:", updatedListings);
+        setListings(updatedListings);
+        
+        // Reset form fields and hide the form
         setTitle('');
         setDescription('');
         setShowForm(false);
@@ -72,6 +102,8 @@ export default function ListingsPage() {
       alert('Please provide both the title and description.');
     }
   };
+  
+  
 
     // Add handleSearchResults function
   const handleSearchResults = (results) => {
@@ -119,7 +151,7 @@ export default function ListingsPage() {
           <Box key={index} border={1} p={2} mt={1}>
             <div>Posted by: {listing.username}</div> {/* Displaying the username */}
             <div>Title: {listing.title}</div>
-            <div>Description: {listing.description}</div>
+            <div>Description: {listing.listing_description}</div>
             <div>Date: {listing.date}</div> {/* Displaying date */}
           </Box>
         ))}
