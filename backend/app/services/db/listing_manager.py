@@ -1,10 +1,9 @@
-from fastapi import HTTPException
-
 from datetime import datetime
 
 from .db_connect import connect
 from .user_manager import get_user
-from ..gmaps import *
+from ..gmaps import get_current_location, gmaps_api, calculate_boundaries
+
 
 def create_listing(username: str, title: str, listing_description: str = None, location: str = None):
     """Create a listing for the given username with the given details.
@@ -36,7 +35,7 @@ def create_listing(username: str, title: str, listing_description: str = None, l
         else:
             try:
                 lat, long = gmaps_api.geocode(location)[0]['geometry']['location'].values()
-            except:
+            except Exception:
                 return {
                     "message:": f"Invalid location: {location}. Enter a valid address.",
                     "status": "failure"
@@ -87,7 +86,7 @@ def get_listings(listing_id: int = None, username: str = None,
         distance (float): Matches for listings within the specified radius in miles.
 
     Returns:
-        The status of the call in a dictionary with the results in key 
+        The status of the call in a dictionary with the results in key
         "results" as a list of listings dictionaries.
     """
     # Connect to SQL database
@@ -185,7 +184,7 @@ def update_listing(listing_id: int, title: str = None, listing_description: str 
         A dict with two keys, "status" and "message". Status is the status
         of the user creation, either "success" or "failure".
     """
-    
+
     with connect() as conn:
         cursor = conn.cursor(dictionary=True)
 
@@ -252,4 +251,3 @@ def delete_listing(listing_id: int):
         "message": f"Listing {listing_id} has been deleted.",
         "status": "success"
     }
-

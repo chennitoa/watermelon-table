@@ -6,6 +6,7 @@ MAP_KEY = os.getenv('GMAPS_APIKEY')
 
 gmaps_api = googlemaps.Client(key=MAP_KEY)
 
+
 def get_current_location():
     """Retrieve latitude and longitude coordinates for the current device using Google Maps Geolocation API.
 
@@ -16,13 +17,14 @@ def get_current_location():
 
     return lat, long
 
+
 def distance(loc1: tuple[float, float], loc2: tuple[float, float]):
     """Calculate the distance between two coordinates using the Haversine formula.
 
     Args:
         loc1: A tuple of a latitude and longitude coordinate.
         loc2: A tuple of a latitude and longitude coordinate.
-    
+
     Returns:
         A float representing the distance between the two coordinates in miles.
     """
@@ -43,13 +45,14 @@ def distance(loc1: tuple[float, float], loc2: tuple[float, float]):
     # Return the distance in miles
     return c * 3956
 
+
 def calculate_boundaries(loc: tuple[float, float], radius: int):
     """Calculate the boundary lines for a square around a coordinate using a specified radius.
 
     Args:
         loc: A tuple of a latitude and longitude coordinate.
         radius: The distance from the center of the square to the closest point on a side.
-    
+
     Returns:
         A dictionary mapping each side of the square to its latitude and longitude values.
         Sides are labeled according to the cardinal direction they are in.
