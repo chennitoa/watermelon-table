@@ -50,6 +50,7 @@ class Listing(BaseModel):
     username: str
     title: str
     description: Optional[str]
+    location: Optional[str]
 
 
 class UpdateListing(BaseModel):
@@ -63,6 +64,7 @@ class SearchListings(BaseModel):
     username: Optional[str]
     title: Optional[str]
     description: Optional[str]
+    distance: Optional[int]
 
 
 class Token(BaseModel):
