@@ -11,7 +11,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { createUser, updateProfile } from "../client";
+import { createUser, updateProfile, getUserWithUsername } from "../client";
 
 function GenderSelect() {
   return (
@@ -106,6 +106,9 @@ function ProfilePictureUpload({ setPreviewUrl }) {
 function SignUp() {
   const [formValid, setFormValid] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(""); // State to store previewUrl
+  const [usernameError, setUsernameError] = useState(""); // State to store username error message
+  const [emailError, setEmailError] = useState(""); // State to store email error message
+  const [passwordError, setPasswordError] = useState(""); // State to store password error message
   const navigate = useNavigate(); // Get history object
 
   const handleSubmit = async (event) => {
@@ -147,16 +150,53 @@ function SignUp() {
   
 
   const handleInputChange = (event) => {
-    // Check if all required fields are filled
     const formFields = event.currentTarget.querySelectorAll("[required]");
     let isValid = true;
+
     formFields.forEach((field) => {
-      if (!field.value.trim()) {
+      const value = field.value.trim();
+
+      if (!value) {
         isValid = false;
+      } else {
+        switch (field.name) {
+          case 'username':
+            const usernameRegex = /^[a-zA-Z0-9_.]{6,}$/;
+            if (!usernameRegex.test(value)) {
+              isValid = false;
+              setUsernameError("Username must be at least 6 characters long and can only contain letters, numbers, underscores, and periods.");
+            }
+            else {
+              setUsernameError("");
+            }
+            break;
+          case 'email':
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(value)) {
+              isValid = false;
+              setEmailError("Invalid email format.");
+            } else {
+              setEmailError("");
+            }
+            break;
+          case 'password':
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            if (!passwordRegex.test(value)) {
+              isValid = false;
+              setPasswordError("Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.");
+            } else {
+              setPasswordError("");
+            }
+            break;
+          default:
+            break;
+        }
       }
     });
+
     setFormValid(isValid);
   };
+  
 
   return (
     <ThemeProvider theme={createTheme()}>
@@ -207,6 +247,8 @@ function SignUp() {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  error={!!usernameError}
+                  helperText={usernameError}
                   required
                   fullWidth
                   id="username"
@@ -217,6 +259,8 @@ function SignUp() {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  error={!!emailError}
+                  helperText={emailError}
                   required
                   fullWidth
                   id="email"
@@ -227,6 +271,8 @@ function SignUp() {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  error={!!passwordError}
+                  helperText={passwordError}
                   required
                   fullWidth
                   name="password"
@@ -266,7 +312,7 @@ function SignUp() {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="sign-in" variant="body2">
                   Already have an account? Sign in
                 </Link>
               </Grid>
