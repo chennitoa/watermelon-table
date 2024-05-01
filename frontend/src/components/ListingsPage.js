@@ -12,6 +12,7 @@ export default function ListingsPage() {
   const [description, setDescription] = useState('');
   const [listings, setListings] = useState([]);
   const [currentUsername, setUsername] = useState('');
+  const [currentUserId, setUserId] = useState(0);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -19,6 +20,7 @@ export default function ListingsPage() {
         const user = await getCurrentUser(); 
         // console.log(profile.Profile);
         setUsername(user.result.username);
+        setUserId(user.result.user_id);
       } catch (error) {
         console.error('Failed to fetch profile:', error);
       }
