@@ -45,6 +45,8 @@ CREATE TABLE IF NOT EXISTS listings (
     date DATETIME NOT NULL,
     title VARCHAR(255) NOT NULL,
     listing_description TEXT,
+    latitude float,
+    longitude float,
     PRIMARY KEY (listing_id),
     FOREIGN KEY (user_id)
         REFERENCES user_information(user_id)

@@ -14,7 +14,7 @@ router = APIRouter(
 @router.post("/")
 def create_listing(listing: models.Listing):
     return listing_manager.create_listing(listing.username, listing.title,
-                                          listing.description)
+                                          listing.description, listing.location)
 
 
 # Update an existing listing
@@ -34,4 +34,4 @@ def delete_listing(listing_id: int):
 @router.post("/search/")
 def get_listing(search: models.SearchListings):
     return listing_manager.get_listings(search.listing_id, search.username,
-                                        search.title, search.description)
+                                        search.title, search.description, search.distance)

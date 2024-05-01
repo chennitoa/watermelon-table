@@ -16,6 +16,7 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - SECRET_KEY=${SECRET_KEY}
+      - GMAPS_APIKEY=${GMAPS_APIKEY}
     ports:
       - "5001:5000"
     depends_on:
