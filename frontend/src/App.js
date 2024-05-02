@@ -8,6 +8,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import UserProfile from './components/UserProfile.js';
 import ListingsPage from './components/ListingsPage.js';
+import SearchMap from './components/SearchMap.js';
 
 function App() {
   const mode = React.useState('light');
@@ -23,6 +24,7 @@ function App() {
             <Route path="/listings" element={<ListingsPage />} />
             <Route path="/" element={<HomePage />} />
             <Route path="/profile/:username" element={<UserProfile />} />
+            <Route path="/map" element={<SearchMap />} />
           </Routes>
         </Router>
       </ThemeProvider>
