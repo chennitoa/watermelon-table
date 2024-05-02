@@ -4,6 +4,7 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import HeaderRAF from './HeaderRAF';
 import SearchBar from './SearchBar';
+import SearchMap from './SearchMap';
 import { getCurrentUser, createListing, getListing, getUserWithUserId } from '../client';
 
 export default function ListingsPage() {
@@ -114,6 +115,7 @@ export default function ListingsPage() {
     <div>
       <HeaderRAF />
       <SearchBar onSearchResults={handleSearchResults}/>
+      <SearchMap />
       {!showForm && (
         <Button variant="contained" color="primary" onClick={() => setShowForm(true)}>
           Create Listing
