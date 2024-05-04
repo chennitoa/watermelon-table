@@ -12,7 +12,7 @@ MYSQL_DATABASE = os.getenv('MYSQL_DATABASE')
 def connect() -> mysql.connector.MySQLConnection:
     """Connects to a MYSQL server and returns the connection object.
 
-    Note that the connection should be closed by any caller. Failure to do this 
+    Note that the connection should be closed by any caller. Failure to do this
     may result in future connections not being able to be allocated.
 
     Returns:
