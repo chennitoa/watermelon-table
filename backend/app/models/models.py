@@ -57,11 +57,10 @@ class UpdateListing(BaseModel):
     listing_id: int
     title: Optional[str]
     description: Optional[str]
-    address: Optional[str]
+    location: Optional[str]
 
 
 class SearchListings(BaseModel):
-    listing_id: Optional[int]
     username: Optional[str]
     title: Optional[str]
     description: Optional[str]
