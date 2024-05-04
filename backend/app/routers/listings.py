@@ -21,7 +21,7 @@ def create_listing(listing: models.Listing):
 @router.put("/update/")
 def update_listing(update: models.UpdateListing):
     return listing_manager.update_listing(update.listing_id, update.title,
-                                          update.description)
+                                          update.description, update.address)
 
 
 # Delete an existing listing
