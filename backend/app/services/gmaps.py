@@ -2,20 +2,9 @@ import googlemaps
 import os
 from math import radians, cos, sin, asin, sqrt, pi
 
+
 MAP_KEY = os.getenv('GMAPS_APIKEY')
-
 gmaps_api = googlemaps.Client(key=MAP_KEY)
-
-
-def get_current_location():
-    """Retrieve latitude and longitude coordinates for the current device using Google Maps Geolocation API.
-
-    Returns:
-        tuple: A tuple of two float values representing the latitude and longitude.
-    """
-    lat, long = gmaps_api.geolocate().get('location').values()
-
-    return lat, long
 
 
 def distance(loc1: tuple[float, float], loc2: tuple[float, float]):
