@@ -42,8 +42,8 @@ def create_listing(username: str, title: str, listing_description: str = None, l
                 }
 
         query = '''
-        INSERT INTO listings (user_id, date, title, listing_description, latitude, longitude)
-        VALUES (%s, %s, %s, %s, %s, %s)
+        INSERT INTO listings (user_id, date, title, listing_description, latitude, longitude, street_address)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
         '''
 
         values = (
@@ -52,7 +52,8 @@ def create_listing(username: str, title: str, listing_description: str = None, l
             title,
             listing_description,
             lat,
-            long
+            long,
+            location
         )
 
         cursor.execute(query, values)
@@ -170,8 +171,8 @@ def get_listings(listing_id: int = None, username: str = None,
     }
 
 
-def update_listing(listing_id: int, title: str = None, listing_description: str = None):
-    """Update an existing listing with a different title or description.
+def update_listing(listing_id: int, title: str = None, listing_description: str = None, address: str = None):
+    """Update an existing listing with a different title, description, or address.
 
     Cannot update the user id or the date.
 
@@ -179,6 +180,7 @@ def update_listing(listing_id: int, title: str = None, listing_description: str 
         listing_id (int): The id associated with the listing.
         title (str): The title of the listing.
         listing_description (str): An optional long text blob description.
+        address (str): The street address of the listing.
 
     Returns:
         A dict with two keys, "status" and "message". Status is the status
@@ -190,7 +192,7 @@ def update_listing(listing_id: int, title: str = None, listing_description: str 
 
         # Check if listing exists
         listings = get_listings(listing_id=listing_id)
-        if not listings['results']:
+        if not listings['results'] or listings['results'] == [None]:
             return {
                 "message": f"Failed to find listing {listing_id}",
                 "status": "failure"
@@ -199,13 +201,21 @@ def update_listing(listing_id: int, title: str = None, listing_description: str 
         query = '''
         UPDATE listings
         SET title = COALESCE(%s, title),
-        listing_description = COALESCE(%s, listing_description)
+        listing_description = COALESCE(%s, listing_description),
+        street_address = COALESCE(%s, street_address),
+        latitude = COALESCE(%s, latitude),
+        longitude = COALESCE(%s, longitude)
         WHERE listing_id = %s
         '''
+
+        lat, long = gmaps_api.geocode(address)[0]['geometry']['location'].values()
 
         values = (
             title,
             listing_description,
+            address,
+            lat,
+            long,
             listing_id,
         )
 

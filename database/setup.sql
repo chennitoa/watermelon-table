@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS listings (
     listing_description TEXT,
     latitude float,
     longitude float,
+    street_address VARCHAR(255),
     PRIMARY KEY (listing_id),
     FOREIGN KEY (user_id)
         REFERENCES user_information(user_id)
