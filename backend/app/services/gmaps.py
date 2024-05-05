@@ -1,21 +1,10 @@
 import googlemaps
 import os
-from math import radians, cos, sin, asin, sqrt, pi
+from math import radians, cos, sin, asin, sqrt
+
 
 MAP_KEY = os.getenv('GMAPS_APIKEY')
-
 gmaps_api = googlemaps.Client(key=MAP_KEY)
-
-
-def get_current_location():
-    """Retrieve latitude and longitude coordinates for the current device using Google Maps Geolocation API.
-
-    Returns:
-        tuple: A tuple of two float values representing the latitude and longitude.
-    """
-    lat, long = gmaps_api.geolocate().get('location').values()
-
-    return lat, long
 
 
 def distance(loc1: tuple[float, float], loc2: tuple[float, float]):
@@ -44,35 +33,3 @@ def distance(loc1: tuple[float, float], loc2: tuple[float, float]):
     # Radius of Earth is 3956 miles
     # Return the distance in miles
     return c * 3956
-
-
-def calculate_boundaries(loc: tuple[float, float], radius: int):
-    """Calculate the boundary lines for a square around a coordinate using a specified radius.
-
-    Args:
-        loc: A tuple of a latitude and longitude coordinate.
-        radius: The distance from the center of the square to the closest point on a side.
-
-    Returns:
-        A dictionary mapping each side of the square to its latitude and longitude values.
-        Sides are labeled according to the cardinal direction they are in.
-        N represents the top boundary of the square, S is the bottom boundary, etc..
-    """
-    lat, long = loc
-
-    long_dist = radius / cos(radians(lat))
-
-    lat_offset = (radius / 3956) * (180 / pi)
-    long_offset = (long_dist / 3956) * (180 / pi)
-
-    north_lat = lat + lat_offset
-    south_lat = lat - lat_offset
-    east_long = long + long_offset
-    west_long = long - long_offset
-
-    return {
-        'S': south_lat,
-        'N': north_lat,
-        'W': west_long,
-        'E': east_long
-    }

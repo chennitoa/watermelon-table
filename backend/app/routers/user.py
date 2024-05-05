@@ -16,20 +16,44 @@ router = APIRouter(
 @router.put("/update/")
 def update_user_details(update: models.UpdateUserDetails):
     """Update an existing profile."""
-    return user_manager.update_user(update.username, update.email, update.first_name, update.last_name,
-                                    update.new_username)
+    status = user_manager.update_user(update.username, update.email, update.first_name, update.last_name,
+                                      update.new_username)
+
+    if status:
+        return {
+            "message": f"Updated user details for user {update.username}.",
+            "status": "success"
+        }
+    else:
+        raise HTTPException(status_code=409, detail=f"Could not update details for user {update.username}.")
 
 
 @router.get("/usernameget/{username}")
 def get_user_details_from_username(username: str):
     """Get user details with a username."""
-    return user_manager.get_user(username, is_username=True)
+    user_details = user_manager.get_user(username, is_username=True)
+
+    if user_details:
+        return {
+            "result": user_details,
+            "status": "success"
+        }
+    else:
+        raise HTTPException(status_code=404, detail="Failed to find user.")
 
 
 @router.get("/idget/{user_id}")
 def get_user_details_from_user_id(user_id: str):
     """Get user details with a user id."""
-    return user_manager.get_user(user_id, is_username=False)
+    user_details = user_manager.get_user(user_id, is_username=False)
+
+    if user_details:
+        return {
+            "result": user_details,
+            "status": "success"
+        }
+    else:
+        raise HTTPException(status_code=404, detail="Failed to find user.")
 
 
 @router.get("/")

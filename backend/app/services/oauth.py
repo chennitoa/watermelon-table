@@ -12,19 +12,18 @@ def authenticate(username: str, password: str, bcrypt_context: CryptContext) -> 
     Args:
         username (str): The username to identify.
         password (str): The password to authenticate.
-    
+
     Returns:
-        A dict with two keys, "status" and "message". Status is the status
-        of the user creation, either "success" or "failure".
+        True if authentication is a success, else False
     """
     authentication = get_auth(username)
 
-    if authentication['status'] != "success":
+    if not authentication:
         return False  # Some kind of error happened trying to fetch the authentication
-    elif not bcrypt_context.verify(password, authentication['result']['password']):
-        return False  # The password is incorrect
+    elif bcrypt_context.verify(password, authentication['password']):
+        return True  # The password is correct
     else:
-        return authentication['result']
+        return False  # Some other case, False by default
 
 
 def create_access_token(username: str, secret: str, algo: str) -> str:
