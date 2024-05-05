@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from ..models import models
 from ..services.db import profile_manager
@@ -22,10 +22,7 @@ def update_profile(update: models.UpdateProfile):
             "status": "success"
         }
     else:
-        return {
-            "message": f"Failed to update profile for user {update.username}",
-            "status": "failure"
-        }
+        raise HTTPException(status_code=409, detail=f"Failed to update profile for user {update.username}")
 
 
 @router.get("/{username}")
@@ -39,7 +36,4 @@ def get_profile(username):
             "status": "success"
         }
     else:
-        return {
-            "message": f"Failed to find user {username}",
-            "status": "failure"
-        }
+        raise HTTPException(status_code=404, detail=f"Failed to find user {username}")

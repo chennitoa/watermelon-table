@@ -25,10 +25,7 @@ def update_user_details(update: models.UpdateUserDetails):
             "status": "success"
         }
     else:
-        return {
-            "message": f"Could not update details for user {update.username}",
-            "status": "failure"
-        }
+        raise HTTPException(status_code=409, detail=f"Could not update details for user {update.username}.")
 
 
 @router.get("/usernameget/{username}")
