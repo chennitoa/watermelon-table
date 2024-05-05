@@ -2,10 +2,10 @@ from datetime import datetime
 
 from .db_connect import connect
 from .user_manager import get_user
-from ..gmaps import get_current_location, gmaps_api, calculate_boundaries
 
 
-def create_listing(username: str, title: str, listing_description: str = None, location: str = None):
+def create_listing(username: str, title: str, listing_description: str = None,
+                   lat: float = None, long: float = None, location: str = None):
     """Create a listing for the given username with the given details.
 
     Args:
@@ -15,8 +15,7 @@ def create_listing(username: str, title: str, listing_description: str = None, l
         location (str): The address of the listing. None defaults to the submitter's current location.
 
     Returns:
-        A dict with two keys, "status" and "message". Status is the status
-        of the user creation, either "success" or "failure".
+        True if the function succeeds, else False.
     """
 
     with connect() as conn:
@@ -24,22 +23,8 @@ def create_listing(username: str, title: str, listing_description: str = None, l
 
         # Check if user exists and get the user id
         user_details = get_user(username, is_username=True)
-        if user_details['status'] != "success":
-            return {
-                "message": f"Failed to find user {username}",
-                "status": "failure"
-            }
-
-        if location is None:
-            lat, long = get_current_location()
-        else:
-            try:
-                lat, long = gmaps_api.geocode(location)[0]['geometry']['location'].values()
-            except Exception:
-                return {
-                    "message:": f"Invalid location: {location}. Enter a valid address.",
-                    "status": "failure"
-                }
+        if not user_details:
+            return False
 
         query = '''
         INSERT INTO listings (user_id, date, title, listing_description, latitude, longitude, street_address)
@@ -47,7 +32,7 @@ def create_listing(username: str, title: str, listing_description: str = None, l
         '''
 
         values = (
-            user_details['result']['user_id'],
+            user_details['user_id'],
             datetime.now(),
             title,
             listing_description,
@@ -59,17 +44,36 @@ def create_listing(username: str, title: str, listing_description: str = None, l
         cursor.execute(query, values)
         conn.commit()
 
-    return {
-        "message": f"New listing created for user {username}.",
-        "status": "success"
-    }
+    return True
 
 
-def get_listings(listing_id: int = None, username: str = None,
-                 title_keywords: str = None, description_keywords: str = None, distance: float = None):
+def get_listing(listing_id: int) -> dict | None:
+    """Get a listing based on its unique listing id.
+
+    Args:
+        listing_id (int): Matches the listing id for the listing.
+
+    Returns:
+        The single listing as a dict if it exists, else None.
+    """
+    with connect() as conn:
+        cursor = conn.cursor(dictionary=True)
+        query = "SELECT * FROM listings WHERE listing_id = %s"
+
+        cursor.execute(query, (listing_id, ))
+        listing = cursor.fetchone()
+
+        if not listing:
+            return None
+
+    return listing
+
+
+def search_listings(username: str = None, title_keywords: str = None,
+                    description_keywords: str = None,
+                    lat: float = None, long: float = None, distance: float = None) -> list[dict]:
     """Get a listing depending on some search criteria:
 
-    If listing_id is not null, then exactly one listing that matches the listing id will be returned.
     If username is not null, all listings will match the username given.
     If title_keywords is not null, all listings will contain the string given in the title.
     If description_keywords is not null, all listings will contain the string given in the description.
@@ -80,33 +84,17 @@ def get_listings(listing_id: int = None, username: str = None,
     If more complex searching is desired, then the results given should be filtered again with scripts.
 
     Args:
-        listing_id (int): Matches the listing id for the listing.
         username (str): Matches the user who posted the listing.
         title_keywords (str): Matches for the specified string in the title.
         description_keywords (str): Matches for the specified string in the description.
         distance (float): Matches for listings within the specified radius in miles.
 
     Returns:
-        The status of the call in a dictionary with the results in key
-        "results" as a list of listings dictionaries.
+        The matched listings as a list of dicts.
     """
     # Connect to SQL database
     with connect() as conn:
         cursor = conn.cursor(dictionary=True)
-
-        if listing_id is not None:
-            query = "SELECT * FROM listings WHERE listing_id = %s"
-
-            cursor.execute(query, (listing_id, ))
-            listing = cursor.fetchone()
-
-            return {
-                "results": [listing],
-                "status": "success"
-            }
-        else:
-            # Do nothing, simply continue, avoid nesting
-            pass
 
         # Prepare a basic query
         query = "SELECT * FROM listings"
@@ -115,48 +103,35 @@ def get_listings(listing_id: int = None, username: str = None,
 
         if username is not None:
             user_details = get_user(username, is_username=True)
-            if user_details['status'] == "failure":
-                return {
-                    "results": [],
-                    "status": "success"
-                }
+            if not user_details:
+                return []
             else:
-                values.append(user_details['result']['user_id'])
+                values.append(user_details['user_id'])
                 conditions.append("user_id = %s")
-        else:
-            # Do nothing, simply continue, avoid nesting
-            pass
 
         if title_keywords is not None:
             values.append(f"%{title_keywords}%")
             conditions.append("title LIKE %s")
-        else:
-            # Do nothing, simply continue, avoid nesting
-            pass
 
         if description_keywords is not None:
             values.append(f"%{description_keywords}%")
             conditions.append("listing_description LIKE %s")
-        else:
-            # Do nothing, simply continue, avoid nesting
-            pass
-
-        if distance is not None:
-            lat, long = get_current_location()
-            boundaries = calculate_boundaries((lat, long), distance)
-
-            conditions.append("(latitude BETWEEN %s AND %s)")
-            conditions.append("(longitude BETWEEN %s AND %s)")
-
-            for boundary_line in boundaries.values():
-                values.append(f"{boundary_line}")
-        else:
-            pass
 
         # Join the conditions together
         if conditions:
             query += " WHERE "
             query += " AND ".join(conditions)
+
+        if lat is not None and long is not None and distance is not None:
+            # Spherical Law of Cosines Formula
+            # Parameters are in order: latitude, longitude, latitude, distance
+            query += """
+            HAVING
+            (3959 * acos(cos(radians(%s)) * cos(radians(latitude))
+            * cos(radians(longitude) - radians(%s)) + sin(radians(%s)) * sin(radians(latitude))))
+            < %s
+            """
+            values += [lat, long, lat, distance]
 
         if values:
             cursor.execute(query, values)
@@ -165,14 +140,12 @@ def get_listings(listing_id: int = None, username: str = None,
 
         listings = cursor.fetchall()
 
-    return {
-        "results": listings,
-        "status": "success"
-    }
+    return listings
 
 
-def update_listing(listing_id: int, title: str = None, listing_description: str = None, address: str = None):
-    """Update an existing listing with a different title, description, or address.
+def update_listing(listing_id: int, title: str = None, listing_description: str = None,
+                   lat: float = None, long: float = None, location: str = None):
+    """Update an existing listing with a different title, description, or location.
 
     Cannot update the user id or the date.
 
@@ -183,81 +156,65 @@ def update_listing(listing_id: int, title: str = None, listing_description: str 
         address (str): The street address of the listing.
 
     Returns:
-        A dict with two keys, "status" and "message". Status is the status
-        of the user creation, either "success" or "failure".
+        True if the function succeeds, else False.
     """
 
     with connect() as conn:
         cursor = conn.cursor(dictionary=True)
 
         # Check if listing exists
-        listings = get_listings(listing_id=listing_id)
-        if not listings['results'] or listings['results'] == [None]:
-            return {
-                "message": f"Failed to find listing {listing_id}",
-                "status": "failure"
-            }
+        listing = get_listing(listing_id=listing_id)
+        if not listing:
+            return False
 
         query = '''
         UPDATE listings
         SET title = COALESCE(%s, title),
         listing_description = COALESCE(%s, listing_description),
-        street_address = COALESCE(%s, street_address),
         latitude = COALESCE(%s, latitude),
-        longitude = COALESCE(%s, longitude)
+        longitude = COALESCE(%s, longitude),
+        street_address = COALESCE(%s, street_address)
         WHERE listing_id = %s
         '''
-
-        lat, long = gmaps_api.geocode(address)[0]['geometry']['location'].values()
 
         values = (
             title,
             listing_description,
-            address,
             lat,
             long,
+            location,
             listing_id,
         )
 
         cursor.execute(query, values)
         conn.commit()
 
-    return {
-        "message": f"Listing {listing_id} has been updated.",
-        "status": "success"
-    }
+    return True
 
 
-def delete_listing(listing_id: int):
+def delete_listing(listing_id: int) -> bool:
     """Deletes the given listing with matching listing_id.
 
     Args:
         listing_id (int): The listing to delete.
 
     Returns:
-        A dict with two keys, "status" and "message". Status is the status
-        of the user creation, either "success" or "failure".
+        True if the function succeeds, else False.
     """
     with connect() as conn:
         cursor = conn.cursor()
 
         # Check if listing exists
-        listings = get_listings(listing_id=listing_id)
-        if not listings['results']:
-            return {
-                "message": f"Failed to find listing {listing_id}",
-                "status": "failure"
-            }
+        listing = get_listing(listing_id=listing_id)  # Should only return one
+        if not listing:
+            return False
 
         query = '''
-        DELETE FROM listing
+        DELETE FROM listings
         WHERE listing_id = %s
         '''
 
         cursor.execute(query, (listing_id, ))
         conn.commit()
 
-    return {
-        "message": f"Listing {listing_id} has been deleted.",
-        "status": "success"
-    }
+    return True
