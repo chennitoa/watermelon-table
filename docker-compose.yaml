@@ -24,7 +24,9 @@ services:
 
   database:
     container_name: db
-    build: ./database
+    build:
+      context: ./database
+      target: release
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
