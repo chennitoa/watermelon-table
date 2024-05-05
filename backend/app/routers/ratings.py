@@ -10,7 +10,7 @@ router = APIRouter(
 )
 
 
-@router.post("/")
+@router.post("/rate/")
 def rate_profile(rating: models.Rating):
     '''Submits a rating for a profile'''
     if not 1 <= rating.rating <= 5:
@@ -42,9 +42,9 @@ def update_rating(update: models.Rating):
 
 
 @router.get("/all/{username}")
-def get_rating(username: str, is_rater: bool):
+def get_rating(username: str):
     """Get all existing ratings for a user."""
-    ratings = rating_manager.get_rating(username)
+    ratings = rating_manager.get_ratings(username)
 
     if ratings:
         return {
@@ -55,7 +55,7 @@ def get_rating(username: str, is_rater: bool):
         raise HTTPException(status_code=404, detail="Failed to find user.")
 
 
-@router.get("/{rater_name}/{rated_name}")
+@router.post("/get/")
 def get_specific_rating(rater_name: str, rated_name: str):
     """Get all existing ratings for a user."""
     ratings = rating_manager.get_specific_rating(rater_name, rated_name)
@@ -69,10 +69,10 @@ def get_specific_rating(rater_name: str, rated_name: str):
         raise HTTPException(status_code=404, detail="Failed to find user.")
 
 
-@router.get("/{username}")
-def get_avg_rating(username: str):
+@router.get("/average/{username}")
+def get_user_rating(username: str):
     """Get the average rating for a user."""
-    rating = rating_manager.get_avg_rating(username)
+    rating = rating_manager.get_user_rating(username)
 
     if rating:
         return {
