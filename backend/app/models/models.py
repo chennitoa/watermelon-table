@@ -64,6 +64,7 @@ class SearchListings(BaseModel):
     username: Optional[str]
     title: Optional[str]
     description: Optional[str]
+    location: Optional[str]
     distance: Optional[int]
 
 
