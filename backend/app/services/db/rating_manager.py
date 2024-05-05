@@ -84,7 +84,7 @@ def update_rating(rater_name: str, rated_name: str, rating: int):
             rater_name,
             rated_name
         )
-        print(query)
+
         cursor.execute(query, values)
         conn.commit()
 

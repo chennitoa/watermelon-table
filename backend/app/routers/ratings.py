@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 
 from ..models import models
 from ..services.db import rating_manager
+from .auth import get_current_user
 
 
 router = APIRouter(
@@ -11,8 +12,11 @@ router = APIRouter(
 
 
 @router.post("/rate/")
-def rate_profile(rating: models.Rating):
+def rate_profile(rating: models.Rating, current_user: str = Depends(get_current_user)):
     '''Submits a rating for a profile'''
+    if current_user['username'] != rating.rater_name:
+        raise HTTPException(status_code=401, detail="Failed to authorize user.")
+
     if not 1 <= rating.rating <= 5:
         raise HTTPException(status_code=400, detail="Invalid rating. Rating must be between 1-5.")
 
