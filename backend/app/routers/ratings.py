@@ -1,3 +1,4 @@
+from typing import Any
 from fastapi import APIRouter, HTTPException, Depends
 
 from ..models import models
@@ -12,7 +13,7 @@ router = APIRouter(
 
 
 @router.post("/rate/")
-def rate_profile(rating: models.Rating, current_user: str = Depends(get_current_user)):
+def rate_profile(rating: models.Rating, current_user: dict[str, Any] = Depends(get_current_user)):
     '''Submits a rating for a profile'''
     if current_user['username'] != rating.rater_name:
         raise HTTPException(status_code=401, detail="Failed to authorize user.")
