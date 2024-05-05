@@ -13,11 +13,33 @@ router = APIRouter(
 @router.put("/update/")
 def update_profile(update: models.UpdateProfile):
     """Update an existing profile."""
-    return profile_manager.update_profile(update.username, update.description, update.profile_picture,
-                                          update.interest1, update.interest2, update.interest3, update.gender)
+    status = profile_manager.update_profile(update.username, update.description, update.profile_picture,
+                                            update.interest1, update.interest2, update.interest3, update.gender)
+
+    if status:
+        return {
+            "message": f"Profile for user {update.username} has been updated.",
+            "status": "success"
+        }
+    else:
+        return {
+            "message": f"Failed to update profile for user {update.username}",
+            "status": "failure"
+        }
 
 
 @router.get("/{username}")
 def get_profile(username):
     """Get an existing profile with a username."""
-    return profile_manager.get_profile(username)    
+    profile = profile_manager.get_profile(username)
+
+    if profile:
+        return {
+            "result": profile,
+            "status": "success"
+        }
+    else:
+        return {
+            "message": f"Failed to find user {username}",
+            "status": "failure"
+        }
