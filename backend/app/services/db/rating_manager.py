@@ -23,21 +23,10 @@ def rate_profile(rater_name: str, rated_name: str, rating: int):
         if rater_name == rated_name:
             return False
 
-        # Check if users exist
-        userA_details = get_user(rater_name, is_username=True)
-        userB_details = get_user(rated_name, is_username=True)
-
-        if not userA_details or not userB_details:
-            return False
-
-        # Check if a rating already exists
-        cursor.execute(f'''
-                       SELECT * FROM ratings
-                       WHERE rater_name = \"{rater_name}\" AND rated_name = \"{rated_name}\"
-                       ''')
+        exists = get_specific_rating(rater_name, rated_name)
 
         # If a rating already exists, update the rating.
-        if cursor.fetchall():
+        if exists:
             update_rating(rater_name, rated_name, rating)
 
             return True
@@ -48,8 +37,8 @@ def rate_profile(rater_name: str, rated_name: str, rating: int):
         '''
 
         values = (
-            userA_details['username'],
-            userB_details['username'],
+            rater_name,
+            rated_name,
             rating,
             datetime.now()
         )
@@ -84,23 +73,25 @@ def update_rating(rater_name: str, rated_name: str, rating: int):
 
         query = '''
         UPDATE ratings SET
-        rating = COALESCE(%s, rating)
+        rating = COALESCE(%s, rating),
+        rated_date = %s
         WHERE rater_name = %s AND rated_name = %s
         '''
 
         values = (
             rating,
+            datetime.now(),
             rater_name,
             rated_name
         )
-
+        print(query)
         cursor.execute(query, values)
         conn.commit()
 
     return True
 
 
-def get_rating(username: str, is_rater: bool = True):
+def get_ratings(username: str, is_rater: bool = False):
     """Searches for the ratings of a user in the database. If found, returns all ratings.
 
     Args:
@@ -160,21 +151,23 @@ def get_specific_rating(rater_name: str, rated_name: str):
     return ratings
 
 
-def get_avg_rating(username: str):
+def get_user_rating(username: str):
     """Searches for the ratings of a user in the database and returns the average.
 
     Args:
         username (str): The username associated with the user.
 
     Returns:
-        A float representing the average ratings received by the user.
+        A dict containing the average rating for the user and the total number of ratings.
     """
 
-    ratings = get_rating(username, is_rater=False)
+    ratings = get_ratings(username, is_rater=False)
 
     if not ratings:
         return None
 
+    # num = Sum of ratings
+    # den = Total number of ratings
     num = 0
     den = 0
 
@@ -184,4 +177,7 @@ def get_avg_rating(username: str):
 
     avg_ratings = num / den
 
-    return avg_ratings
+    return {
+        "rating": avg_ratings,
+        "total_ratings": den
+    }
