@@ -1,0 +1,38 @@
+version: '3'
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"  # Map port 3000 of the container to port 3000 of the host
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    environment:
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_PORT=${MYSQL_PORT}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - SECRET_KEY=${SECRET_KEY}
+      - GMAPS_APIKEY=${GMAPS_APIKEY}
+    ports:
+      - "5001:5000"
+    depends_on:
+      - database
+
+  database:
+    container_name: db
+    build:
+      context: ./database
+      target: debug
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    ports:
+     - "3305:3306" 
+  
