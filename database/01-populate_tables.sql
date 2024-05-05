@@ -1,5 +1,3 @@
-USE rent_a_lackey;
-
 INSERT INTO user_information (username, email, first_name, last_name)
     VALUES
     ("dogman", "dog@gmail.com", "Richard", "Dog"),
