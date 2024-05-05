@@ -19,10 +19,7 @@ def create_listing(listing: models.Listing):
         try:
             lat, long = gmaps_api.geocode(listing.location)[0]['geometry']['location'].values()
         except Exception:
-            return {
-                "message:": f"Invalid location: {listing.location}.",
-                "status": "failure"
-            }
+            raise HTTPException(status_code=400, detail=f"Invalid location: {listing.location}.")
     else:
         lat, long = (None, None)
 
@@ -35,10 +32,7 @@ def create_listing(listing: models.Listing):
             "status": "success"
         }
     else:
-        return {
-            "message": f"Failed to create listing for user {listing.username}",
-            "status": "failure"
-        }
+        raise HTTPException(status_code=409, detail=f"Failed to create listing for user {listing.username}.")
 
 
 # Update an existing listing
@@ -49,10 +43,7 @@ def update_listing(update: models.UpdateListing):
         try:
             lat, long = gmaps_api.geocode(update.location)[0]['geometry']['location'].values()
         except Exception:
-            return {
-                "message:": f"Invalid location: {update.location}.",
-                "status": "failure"
-            }
+            raise HTTPException(status_code=400, detail=f"Invalid location: {update.location}.")
     else:
         lat, long = (None, None)
 
@@ -65,10 +56,7 @@ def update_listing(update: models.UpdateListing):
             "status": "success"
         }
     else:
-        return {
-            "message": f"Failed to update listing {update.listing_id}.",
-            "status": "failure"
-        }
+        raise HTTPException(status_code=409, detail=f"Failed to update listing {update.listing_id}.")
 
 
 # Delete an existing listing
@@ -82,10 +70,7 @@ def delete_listing(listing_id: int):
             "status": "success"
         }
     else:
-        return {
-            "message": f"Failed to delete listing {listing_id}",
-            "status": "failure"
-        }
+        raise HTTPException(status_code=409, detail=f"Failed to delete listing {listing_id}.")
 
 
 @router.get("/get/{listing_id}")
@@ -98,7 +83,7 @@ def get_listing(listing_id: int):
             "status": "success"
         }
     else:
-        raise HTTPException(status_code=404, detail="Failed to find listing.")
+        raise HTTPException(status_code=404, detail=f"Failed to find listing {listing_id}.")
 
 
 @router.post("/search/")
@@ -109,10 +94,8 @@ def search_listings(search: models.SearchListings):
         try:
             lat, long = gmaps_api.geocode(search.location)[0]['geometry']['location'].values()
         except Exception:
-            return {
-                "message:": f"Invalid location: {search.location}.",
-                "status": "failure"
-            }
+            raise HTTPException(status_code=400, detail=f"Invalid location: {search.location}.")
+
     else:
         lat, long = (None, None)
 
