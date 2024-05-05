@@ -4,7 +4,7 @@ from .user_manager import get_user
 from .db_connect import connect
 
 
-def create_auth(username: str, password: str, bcrypt_context: CryptContext):
+def create_auth(username: str, password: str, bcrypt_context: CryptContext) -> bool:
     """Create an authentication entry in the auth table.
 
     This function should not be called except for debugging purposes.
@@ -17,8 +17,7 @@ def create_auth(username: str, password: str, bcrypt_context: CryptContext):
         used for hashing the password.
 
     Returns:
-        A dict with two keys, "status" and "message". Status is the status
-        of the user creation, either "success" or "failure".
+        True if the function succeeds, else False.
     """
 
     with connect() as conn:
@@ -28,12 +27,9 @@ def create_auth(username: str, password: str, bcrypt_context: CryptContext):
 
         # Check if user exists
         user_details = get_user(username, is_username=True)
-        if user_details['status'] == "failure":
-            return {
-                "message": f"Failed to find user {username}",
-                "status": "failure"
-            }
-        
+        if not user_details:
+            return False
+
         query = '''
         INSERT INTO auth(username, password)
         VALUES (%s, %s)
@@ -47,21 +43,17 @@ def create_auth(username: str, password: str, bcrypt_context: CryptContext):
         cursor.execute(query, values)
         conn.commit()
 
-    return {
-        "message": f"Created authentication entry for user {username}",
-        "status": "successs"
-    }
+    return True
 
 
-def get_auth(username: str):
+def get_auth(username: str) -> dict | None:
     """Gets the authentication entry for the given user.
 
     Args:
         username (str): The username associated with the user.
 
     Returns:
-        The status of the call in a dictionary with the results in key 
-        "result" as a authentication dictionary.
+        The authentication entry as a dict if it exists, else None.
     """
     with connect() as conn:
         cursor = conn.cursor(dictionary=True)
@@ -72,15 +64,12 @@ def get_auth(username: str):
         authentication = cursor.fetchone()
 
         if not authentication:
-            return {"status": "failure"}
+            return None
 
-    return {
-        "result": authentication,
-        "status": "success"
-    }
+    return authentication
 
 
-def update_auth(username: str, password: str, bcrypt_context: CryptContext):
+def update_auth(username: str, password: str, bcrypt_context: CryptContext) -> bool:
     """Updates the authentication entry for the given user.
 
     This function should only be used to change the password of the user.
@@ -93,10 +82,9 @@ def update_auth(username: str, password: str, bcrypt_context: CryptContext):
         used for hashing the password.
 
     Returns:
-        A dict with two keys, "status" and "message". Status is the status
-        of the user creation, either "success" or "failure".
+        True if the function succeeds, else False.
     """
-    
+
     with connect() as conn:
         cursor = conn.cursor()
 
@@ -104,11 +92,8 @@ def update_auth(username: str, password: str, bcrypt_context: CryptContext):
 
         # Check if user exists
         user_details = get_user(username, is_username=True)
-        if user_details['status'] == "failure":
-            return {
-                "message": f"Failed to find user {username}",
-                "status": "failure"
-            }
+        if not user_details:
+            return False
 
         query = '''
         UPDATE auth SET
@@ -124,8 +109,10 @@ def update_auth(username: str, password: str, bcrypt_context: CryptContext):
         cursor.execute(query, values)
         conn.commit()
 
+    return True
 
-def delete_auth(username: str):
+
+def delete_auth(username: str) -> bool:
     """Deletes the authentication entry for the given user.
 
     This function should not be called except for debugging purposes.
@@ -136,8 +123,7 @@ def delete_auth(username: str):
         username (str): The username associated with the user.
 
     Returns:
-        A dict with two keys, "status" and "message". Status is the status
-        of the user creation, either "success" or "failure".
+        True if the function succeeds, else False.
     """
 
     with connect() as conn:
@@ -145,11 +131,8 @@ def delete_auth(username: str):
 
         # Check if user exists
         user_details = get_user(username, is_username=True)
-        if user_details['status'] == "failure":
-            return {
-                "message": f"Failed to find user {username}",
-                "status": "failure"
-            }
+        if not user_details:
+            return False
 
         query = '''
         DELETE FROM auth
@@ -159,7 +142,4 @@ def delete_auth(username: str):
         cursor.execute(query, (username, ))
         conn.commit()
 
-    return {
-        "message": f"Deleted authentication entry for user {username}",
-        "status": "success"
-    }
+    return True

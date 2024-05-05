@@ -56,10 +56,7 @@ def create_user(username: str, email: str, first_name: str, last_name: str,
         cursor.execute(auth_query, auth_values)
         conn.commit()
 
-    return {
-        "message": f"Successfully created user {username}.",
-        "status": "success"
-    }
+    return True
 
 
 def get_user(identifier: str, is_username: bool = True):
@@ -70,8 +67,7 @@ def get_user(identifier: str, is_username: bool = True):
         if int, or the username of the user, if the value is a string
 
     Returns:
-        The status of the call in a dictionary with the results in key 
-        "result" as a user details dictionary.
+        The user details as a dict if it exists, else None.
     """
 
     with connect() as conn:
@@ -87,15 +83,13 @@ def get_user(identifier: str, is_username: bool = True):
         user_details = cursor.fetchone()
 
         if not user_details:
-            return {"status": "failure"}
+            return None
 
-    return {
-        "result": user_details,
-        "status": "success"
-    }
+    return user_details
 
 
-def update_user(username: str, email: str = None, first_name: str = None, last_name: str = None, new_username: str = None):
+def update_user(username: str, email: str = None, first_name: str = None,
+                last_name: str = None, new_username: str = None):
     """Updates the information of a user in the database.
 
     Args:
@@ -103,6 +97,7 @@ def update_user(username: str, email: str = None, first_name: str = None, last_n
         email (str): The email associated with the user.
         first_name (str): The first name associated with the user.
         last_name (str): The last name associated with the user.
+        new_username (str): The username to change to.
 
     Returns:
         A dict with two keys, "status" and "message". Status is the status
@@ -114,11 +109,8 @@ def update_user(username: str, email: str = None, first_name: str = None, last_n
 
         # Check if user exists
         user_details = get_user(username, is_username=True)
-        if user_details['status'] == "failure":
-            return {
-                "message": f"Failed to find user {username}",
-                "status": "failure"
-            }
+        if not user_details:
+            return False
 
         query = '''
         UPDATE user_information SET
@@ -140,17 +132,14 @@ def update_user(username: str, email: str = None, first_name: str = None, last_n
         cursor.execute(query, values)
         conn.commit()
 
-    return {
-        "message": f"Updated user details for user {username}.",
-        "status": "success" 
-    }
+    return True
 
 
 def delete_user(username: str):
     """Completely delete a user and any information associated with the user from the database.
 
     Prefer to update user details with "deleted" rather than using this function.
-    Protect this function with validation from the outside. This function does not 
+    Protect this function with validation from the outside. This function does not
     perform any internal validation.
 
     Args:
@@ -166,21 +155,15 @@ def delete_user(username: str):
 
         # Check if user exists
         user_details = get_user(username, is_username=True)
-        if user_details['status'] == "failure":
-            return {
-                "message": f"Failed to find user {username}",
-                "status": "failure"
-            }
+        if not user_details:
+            return False
 
         query = '''
         DELETE FROM user_information
-        WHERE username = %s 
+        WHERE username = %s
         '''
 
         cursor.execute(query, (username, ))
         conn.commit()
 
-    return {
-        "message": f"Successfully deleted user {username}.",
-        "status": "success"
-    }
+    return True
