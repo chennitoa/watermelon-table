@@ -1,5 +1,3 @@
-USE rent_a_lackey;
-
 -- Users table, stores user information
 CREATE TABLE IF NOT EXISTS user_information (
     user_id INT UNSIGNED AUTO_INCREMENT,
