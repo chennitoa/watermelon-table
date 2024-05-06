@@ -76,3 +76,9 @@ class Token(BaseModel):
 class Auth(BaseModel):
     username: str
     password: str
+
+
+class Rating(BaseModel):
+    rater_name: str
+    rated_name: str
+    rating: int

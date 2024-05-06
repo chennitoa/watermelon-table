@@ -53,3 +53,21 @@ CREATE TABLE IF NOT EXISTS listings (
         REFERENCES user_information(user_id)
         ON DELETE CASCADE
 );
+
+-- Ratings table, stores ratings for profile
+CREATE TABLE IF NOT EXISTS ratings (
+    rating_id INT UNSIGNED AUTO_INCREMENT,
+    rater_name VARCHAR(255) NOT NULL,
+    rated_name VARCHAR(255) NOT NULL,
+    rating INT NOT NULL,
+    rated_date DATETIME NOT NULL,
+    PRIMARY KEY (rating_id),
+    FOREIGN KEY (rated_name)
+        REFERENCES user_information(username)
+        ON DELETE CASCADE,
+    FOREIGN KEY (rater_name)
+        REFERENCES user_information(username)
+        ON DELETE CASCADE,
+    CONSTRAINT rating_range CHECK (rating>=1 AND rating<=5),
+    UNIQUE KEY idx_unique_pairs (rater_name, rated_name)
+);
