@@ -215,4 +215,85 @@ async function getListing(searchCriteria) {
     }
 }
 
-export { createUser, updateProfile, getProfile, updateUser, getUserWithUsername, getUserWithUserId, getCurrentUser, createListing, updateListing, deleteListing, getListing, login };
+// RATINGS
+async function rateProfile() {
+    try {
+        const token = localStorage.getItem('token'); // Assuming the token is stored in localStorage
+        const response = await fetch('http://localhost:5001/ratings/rate/', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+                'Content-Type': 'application/json'
+            },
+        });
+        const data = await response.json();
+        console.log('Profile retrieval response:', data);
+        return data;
+    } catch (error) {
+        console.error('Error retrieving profile:', error);
+        throw error;
+    }
+}
+
+async function updateRating(updateData) {
+    try {
+        const response = await fetch(`http://localhost:5001/ratings/update/`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updateData),
+        });
+        const data = await response.json();
+        console.log('Listing update response:', data);
+        return data;
+    } catch (error) {
+        console.error('Error updating listing:', error);
+        throw error;
+    }
+}
+
+async function getAllRatings(username) {
+    try {
+        const response = await fetch(`http://localhost:5001/listings/${username}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(username),
+        });
+
+        const data = await response.json();
+        console.log('Listing retrieval response:', data);
+        return data;
+    } catch (error) {
+        console.error('Error retrieving listing:', error);
+        throw error;
+    }
+}
+
+async function getSpecificRating(raterName, ratedName) {
+    try {
+        const response = await fetch(`http://localhost:5001/ratings/get/?rater_name=${raterName}&rated_name=${ratedName}`);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error getting specific rating:', error);
+        throw error;
+    }
+};
+
+async function getUserRating(username) {
+    try {
+        const response = await fetch(`http://localhost:5001/ratings/average/${username}`);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error getting user rating:', error);
+        throw error;
+    }
+};
+
+
+
+export { createUser, updateProfile, getProfile, updateUser, getUserWithUsername, getUserWithUserId, getCurrentUser, createListing, updateListing, deleteListing, getListing, login, rateProfile, updateRating, getAllRatings, getSpecificRating, getUserRating };
