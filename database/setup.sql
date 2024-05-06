@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS listings (
     latitude float,
     longitude float,
     street_address VARCHAR(255),
+    avg_user_rating FLOAT,
     PRIMARY KEY (listing_id),
     FOREIGN KEY (user_id)
         REFERENCES user_information(user_id)

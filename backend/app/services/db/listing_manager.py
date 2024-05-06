@@ -2,6 +2,7 @@ from datetime import datetime
 
 from .db_connect import connect
 from .user_manager import get_user
+from .rating_manager import get_user_rating
 
 
 def create_listing(username: str, title: str, listing_description: str = None,
@@ -26,9 +27,15 @@ def create_listing(username: str, title: str, listing_description: str = None,
         if not user_details:
             return False
 
+        rating = get_user_rating(username)
+        if not rating:
+            rating = None
+        else:
+            rating = rating['rating']
+
         query = '''
-        INSERT INTO listings (user_id, date, title, listing_description, latitude, longitude, street_address)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO listings (user_id, date, title, listing_description, latitude, longitude, street_address, avg_user_rating)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         '''
 
         values = (
@@ -38,7 +45,8 @@ def create_listing(username: str, title: str, listing_description: str = None,
             listing_description,
             lat,
             long,
-            location
+            location,
+            rating
         )
 
         cursor.execute(query, values)
@@ -71,7 +79,8 @@ def get_listing(listing_id: int) -> dict | None:
 
 def search_listings(username: str = None, title_keywords: str = None,
                     description_keywords: str = None,
-                    lat: float = None, long: float = None, distance: float = None) -> list[dict]:
+                    lat: float = None, long: float = None, distance: float = None,
+                    rating: int = None) -> list[dict]:
     """Get a listing depending on some search criteria:
 
     If username is not null, all listings will match the username given.
@@ -108,6 +117,10 @@ def search_listings(username: str = None, title_keywords: str = None,
             else:
                 values.append(user_details['user_id'])
                 conditions.append("user_id = %s")
+
+        if rating is not None:
+            values.append(rating)
+            conditions.append("avg_user_rating >= %s")
 
         if title_keywords is not None:
             values.append(f"%{title_keywords}%")
@@ -184,6 +197,44 @@ def update_listing(listing_id: int, title: str = None, listing_description: str 
             long,
             location,
             listing_id,
+        )
+
+        cursor.execute(query, values)
+        conn.commit()
+
+    return True
+
+
+def update_listing_ratings(username: str):
+    """Update all ratings for the listings of a specified user
+
+    This function is intended to be called by other functions
+    to update the user ratings when they change.
+
+    Args:
+        username (str): The username of the user that created the listings.
+
+    Returns:
+        True if the function succeeds, else False.
+    """
+
+    with connect() as conn:
+        cursor = conn.cursor(dictionary=True)
+
+        user_id = get_user(username, is_username=True)['user_id']
+
+        if not user_id:
+            return False
+
+        query = '''
+        UPDATE listings
+        SET avg_user_rating = %s
+        WHERE user_id = %s
+        '''
+
+        values = (
+            get_user_rating(username)['rating'],
+            user_id
         )
 
         cursor.execute(query, values)
