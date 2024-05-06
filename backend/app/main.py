@@ -2,8 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .routers import auth, profiles, user, listings, ratings
-
+from .chat import chat_server
 app = FastAPI()
+app.include_router(chat_server.router)
 
 origins = [
     "http://localhost:8000",
