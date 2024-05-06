@@ -100,7 +100,7 @@ def search_listings(search: models.SearchListings):
         lat, long = (None, None)
 
     listings = listing_manager.search_listings(search.username, search.title,
-                                               search.description, lat, long, search.distance)
+                                               search.description, lat, long, search.distance, search.rating)
 
     return {
         "result": listings,
