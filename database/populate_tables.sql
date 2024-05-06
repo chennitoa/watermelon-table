@@ -18,11 +18,11 @@ INSERT INTO profiles(user_id, profile_description, profile_picture, interest1, i
     (2, "The frog man.", "LLLLLLLLL", "Frogs.", "Doing chores.", "Fishing.", "Female"),
     (3, "The clog man.", "PPPPPPPPP", "Clogs.", "Dogs.", "Walking.", "Female");
 
-INSERT INTO listings (user_id, date, title, listing_description, latitude, longitude, street_address)
+INSERT INTO listings (user_id, date, title, listing_description, latitude, longitude, street_address, avg_user_rating)
     VALUES
-    (1, "1990-01-04 00:00:12", "Looking for a dogsitter", "Dog sitting job. I pay $10.", 37.3368, -121.881, "1 Washington Sq"),
-    (2, "1995-02-05 00:00:23", "Looking for a frogsitter", "Frog sitting job. I pay $20.", 42.2616, -71.7957, "2 Washington Sq"),
-    (3, "2024-03-21 00:12:55", "Looking for a clogsitter", "Clog sitting job. I pay $15.", 37.4223, -122.084, "1600 Amphitheatre Parkway");
+    (1, "1990-01-04 00:00:12", "Looking for a dogsitter", "Dog sitting job. I pay $10.", 37.3368, -121.881, "1 Washington Sq", 0),
+    (2, "1995-02-05 00:00:23", "Looking for a frogsitter", "Frog sitting job. I pay $20.", 42.2616, -71.7957, "2 Washington Sq", 1.5),
+    (3, "2024-03-21 00:12:55", "Looking for a clogsitter", "Clog sitting job. I pay $15.", 37.4223, -122.084, "1600 Amphitheatre Parkway", 5);
 
 INSERT INTO ratings (rater_name, rated_name, rating, rated_date)
     VALUES

@@ -66,6 +66,7 @@ class SearchListings(BaseModel):
     description: Optional[str]
     location: Optional[str]
     distance: Optional[int]
+    rating: Optional[int]
 
 
 class Token(BaseModel):

@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from ..models import models
 from ..services.db import rating_manager
 from .auth import get_current_user
+from ..services.db.listing_manager import update_listing_ratings
 
 
 router = APIRouter(
@@ -23,6 +24,8 @@ def rate_profile(rating: models.Rating, current_user: dict[str, Any] = Depends(g
 
     status = rating_manager.rate_profile(rating.rater_name, rating.rated_name, rating.rating)
 
+    update_listing_ratings(rating.rated_name)
+
     if status:
         return {
             "message": f"User {rating.rater_name} has successfully rated User {rating.rated_name} a {rating.rating} out of 5.",
@@ -36,6 +39,8 @@ def rate_profile(rating: models.Rating, current_user: dict[str, Any] = Depends(g
 def update_rating(update: models.Rating):
     """Update an existing rating."""
     status = rating_manager.update_rating(update.rater_name, update.rated_name, update.rating)
+
+    update_listing_ratings(update.rated_name)
 
     if status:
         return {
