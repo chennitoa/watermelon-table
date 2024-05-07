@@ -1,9 +1,8 @@
 import React, { useRef, useState } from 'react';
 import { useJsApiLoader, GoogleMap, Marker, Autocomplete } from '@react-google-maps/api';
+import { TextField, Button } from '@mui/material';
 
-const center = { lat: 48.8584, lng: 2.2945 };
-
-function SearchMap() {
+function SearchMap({ location }) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
     libraries: ['places'],
@@ -37,10 +36,10 @@ function SearchMap() {
   };
 
   return (
-    <div style={{ height: '100vh', width: '100vw' }}>
+    <div style={{ height: '50vh', width: '100%' }}>
       <GoogleMap
-        center={destination || center}
-        zoom={destination ? 15 : 10}
+        center={location || { lat: 37.0902, lng: -95.7129 }} // Use provided location or default center
+        zoom={destination ? 15 : 4}
         mapContainerStyle={{ height: '100%', width: '100%' }}
         options={{
           zoomControl: false,
@@ -51,21 +50,23 @@ function SearchMap() {
         onLoad={(map) => setMap(map)}
       >
         {destination && <Marker position={destination} />}
+        {/* Autocomplete positioned inside the map */}
+        <div style={{ position: 'absolute', top: 10, left: 10, zIndex: 999 }}>
+          <Autocomplete
+            onLoad={(autoComplete) => {
+              autoComplete.setFields(['formatted_address', 'geometry']);
+            }}
+          >
+            <TextField 
+              label="Location"
+              placeholder="Enter location"
+              inputRef={destinationRef}
+              sx={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}
+            />
+          </Autocomplete>
+          <Button onClick={handleSearch}>Search</Button>
+        </div>
       </GoogleMap>
-      <div style={{ position: 'absolute', top: 10, left: 10, zIndex: 999 }}>
-        <Autocomplete
-          onLoad={(autoComplete) => {
-            autoComplete.setFields(['formatted_address', 'geometry']);
-          }}
-        >
-          <input
-            type="text"
-            placeholder="Enter your destination"
-            ref={destinationRef}
-          />
-        </Autocomplete>
-        <button onClick={handleSearch}>Search</button>
-      </div>
     </div>
   );
 }
