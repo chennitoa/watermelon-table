@@ -24,7 +24,7 @@ function App() {
             <Route path="/listings" element={<ListingsPage />} />
             <Route path="/" element={<HomePage />} />
             <Route path="/profile/:username" element={<UserProfile />} />
-            <Route path="/chat" element={<Chat/>} />
+            <Route path="/chat" element={<Chat sender="testSender" receiver="testReceiver" username="Bob"/>} />
           </Routes>
         </Router>
       </ThemeProvider>
