@@ -215,7 +215,7 @@ export default function Features() {
           md={6}
           sx={{ display: { xs: 'none', sm: 'flex' }, width: '100%' }}
         >
-          <Card
+          {/* <Card
             variant="outlined"
             sx={{
               height: '100%',
@@ -236,7 +236,7 @@ export default function Features() {
                     : items[selectedItemIndex].imageDark,
               }}
             />
-          </Card>
+          </Card> */}
         </Grid>
       </Grid>
     </Container>

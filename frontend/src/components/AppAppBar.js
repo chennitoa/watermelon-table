@@ -39,7 +39,7 @@ function AppAppBar() {
         position="fixed"
         sx={{
           boxShadow: 0,
-          bgcolor: 'transparent',
+          bgcolor: '#B3BFB8',
           backgroundImage: 'none',
           mt: 2,
         }}
