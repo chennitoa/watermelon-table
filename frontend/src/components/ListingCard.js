@@ -75,7 +75,7 @@ export default function ListingCard({ listing }) {
               <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1.5rem' }}>
                 {listing.listing_description}
               </Typography>
-              <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1.5rem' }}>
+              <Typography variant="body1" color="blue" sx={{ fontSize: '1.5rem' }}>
                 Posted by: <Link to={`/profile/${listing.username}`} style={{ textDecoration: 'none', color: 'inherit' }}>{listing.username}</Link>
               </Typography>
               <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1.5rem' }}>
