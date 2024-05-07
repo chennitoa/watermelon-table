@@ -97,7 +97,7 @@ function SearchBar(props) {
         <TextField label="Username" value={searchUsername} onChange={handleUsernameChange} className="custom-textfield"/>
         <TextField label="Title" value={title} onChange={handleTitleChange} className="custom-textfield"/>
         <TextField label="Description" value={description} onChange={handleDescriptionChange} className="custom-textfield"/>
-        <TextField label="Rating" value={rating} onChange={handleRatingChange} className="custom-textfield"/>
+        <TextField label="Minimum Rating" value={rating} onChange={handleRatingChange} className="custom-textfield"/>
         {isLoaded && (
           <Autocomplete
             onLoad={(autoComplete) => {
