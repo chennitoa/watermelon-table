@@ -225,7 +225,7 @@ async function getListing(searchCriteria) {
 }
 
 // RATINGS
-async function rateProfile() {
+async function rateProfile(ratingData) {
   try {
     const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
     const response = await fetch("http://localhost:5001/ratings/rate/", {
@@ -234,6 +234,7 @@ async function rateProfile() {
         Authorization: `Bearer ${token}`, // Include the token in the Authorization header
         "Content-Type": "application/json",
       },
+      body: JSON.stringify(ratingData),
     });
     const data = await response.json();
     console.log("Profile retrieval response:", data);
@@ -254,29 +255,28 @@ async function updateRating(updateData) {
       body: JSON.stringify(updateData),
     });
     const data = await response.json();
-    console.log("Listing update response:", data);
+    console.log("Rating update response:", data);
     return data;
   } catch (error) {
-    console.error("Error updating listing:", error);
+    console.error("Error updating rating:", error);
     throw error;
   }
 }
 
 async function getAllRatings(username) {
   try {
-    const response = await fetch(`http://localhost:5001/listings/${username}`, {
-      method: "POST",
+    const response = await fetch(`http://localhost:5001/ratings/all/${username}`, {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(username),
     });
 
     const data = await response.json();
-    console.log("Listing retrieval response:", data);
+    console.log("Rating retrieval response:", data);
     return data;
   } catch (error) {
-    console.error("Error retrieving listing:", error);
+    console.error("Error retrieving rating:", error);
     throw error;
   }
 }
