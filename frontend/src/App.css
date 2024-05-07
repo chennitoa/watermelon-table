@@ -28,6 +28,21 @@
   color: #61dafb;
 }
 
+.custom-textfield {
+  background-color: #B3BFB8;
+}
+
+.custom-textfield .MuiInputLabel-root {
+  margin-top: -6px;
+  font-size: 16px;
+}
+
+.custom-textfield .Mui-focused .MuiInputLabel-root {
+  margin-top: -30px;
+  font-size: 20px;
+}
+
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
