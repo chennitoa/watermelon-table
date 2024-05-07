@@ -67,7 +67,8 @@ export default function SignInSide() {
             backgroundPosition: 'center',
           }}
         />
-        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square >
+          {/* sx={{backgroundColor: '#B3BFB8'}} */}
           <Box
             sx={{
               my: 8,
@@ -136,7 +137,7 @@ export default function SignInSide() {
                   </Link>
                 </Grid> */}
                 <Grid item>
-                  <Link href="sign-up/" variant="body2">
+                  <Link href="/sign-up" variant="body2">
                     {"Don't have an account? Sign Up"}
                   </Link>
                 </Grid>

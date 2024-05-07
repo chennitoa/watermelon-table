@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -11,7 +11,8 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { createUser, updateProfile } from "../client";
+import { createUser, updateProfile, login } from "../client";
+import Alert from "@mui/material/Alert";
 
 function GenderSelect() {
   return (
@@ -106,7 +107,22 @@ function ProfilePictureUpload({ setPreviewUrl }) {
 function SignUp() {
   const [formValid, setFormValid] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(""); // State to store previewUrl
+  const [usernameError, setUsernameError] = useState(""); // State to store username error message
+  const [emailError, setEmailError] = useState(""); // State to store email error message
+  const [passwordError, setPasswordError] = useState(""); // State to store password error message
+  const [showPassword, setShowPassword] = useState(false); // State to toggle show/hide password
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate(); // Get history object
+
+  useEffect(() => {
+    const errorTimeout = setTimeout(() => {
+      setErrorMessage('');
+    }, 5000);
+  
+    return () => {
+      clearTimeout(errorTimeout);
+    };
+  }, [errorMessage]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -132,8 +148,20 @@ function SignUp() {
     };
 
     try {
+        // const doesUserExist = await getUserWithUsername(userData.username);
+        // if (doesUserExist["result"]["email"] === userData.email) {
+        //   setErrorMessage('Username or email has been taken. Please try again.');
+        // }
+        // else {
+        //   setErrorMessage('');
+        // }
+          
         const userResponse = await createUser(userData);
         console.log('User created:', userResponse);
+
+        const result = await login(data.get('username'), data.get('password'));
+        console.log()
+        localStorage.setItem('token', result.access_token);
 
         const profileResponse = await updateProfile(profileData);
         console.log('Profile updated:', profileResponse);
@@ -147,15 +175,55 @@ function SignUp() {
   
 
   const handleInputChange = (event) => {
-    // Check if all required fields are filled
     const formFields = event.currentTarget.querySelectorAll("[required]");
     let isValid = true;
+
     formFields.forEach((field) => {
-      if (!field.value.trim()) {
+      const value = field.value.trim();
+
+      if (!value) {
         isValid = false;
+      } else {
+        switch (field.name) {
+          case 'username':
+            const usernameRegex = /^[a-zA-Z0-9_.]{6,}$/;
+            if (!usernameRegex.test(value)) {
+              isValid = false;
+              setUsernameError("Username must be at least 6 characters long and can only contain letters, numbers, underscores, and periods.");
+            }
+            else {
+              setUsernameError("");
+            }
+            break;
+          case 'email':
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(value)) {
+              isValid = false;
+              setEmailError("Invalid email format.");
+            } else {
+              setEmailError("");
+            }
+            break;
+          case 'password':
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            if (!passwordRegex.test(value)) {
+              isValid = false;
+              setPasswordError("Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.");
+            } else {
+              setPasswordError("");
+            }
+            break;
+          default:
+            break;
+        }
       }
     });
+
     setFormValid(isValid);
+  };
+
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
   return (
@@ -207,6 +275,8 @@ function SignUp() {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  error={!!usernameError}
+                  helperText={usernameError}
                   required
                   fullWidth
                   id="username"
@@ -217,6 +287,8 @@ function SignUp() {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  error={!!emailError}
+                  helperText={emailError}
                   required
                   fullWidth
                   id="email"
@@ -227,14 +299,24 @@ function SignUp() {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  error={!!passwordError}
+                  helperText={passwordError}
                   required
                   fullWidth
                   name="password"
                   label="Password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   id="password"
                   autoComplete="new-password"
                 />
+                <Button
+                  onClick={handleTogglePasswordVisibility}
+                  variant="outlined"
+                  size="small"
+                  sx={{ mt: 1 }}
+                >
+                  {showPassword ? 'Hide' : 'Show'} Password
+                </Button>
               </Grid>
               <Grid item xs={12}>
                 <ProfilePictureUpload setPreviewUrl={setPreviewUrl} />
@@ -264,9 +346,14 @@ function SignUp() {
             >
               Sign Up
             </Button>
+            {errorMessage && (
+              <Alert severity="error" sx={{ mt: 2 }}>
+                {errorMessage}
+              </Alert>
+            )}
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/sign-in" variant="body2">
                   Already have an account? Sign in
                 </Link>
               </Grid>
