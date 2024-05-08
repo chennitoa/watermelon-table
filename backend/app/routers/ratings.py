@@ -1,10 +1,11 @@
-from typing import Any
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
+from typing import Annotated
+
+from .auth import oauth2_bearer
 from ..models import models
-from ..services.db import rating_manager
-from .auth import get_current_user
-from ..services.db.listing_manager import update_listing_ratings
+from ..services.db import rating_manager, listing_manager
+from ..services.oauth import decode_access_token
 
 
 router = APIRouter(
@@ -14,21 +15,28 @@ router = APIRouter(
 
 
 @router.post("/rate/")
-def rate_profile(rating: models.Rating, current_user: dict[str, Any] = Depends(get_current_user)):
-    '''Submits a rating for a profile'''
-    if current_user['username'] != rating.rater_name:
-        raise HTTPException(status_code=401, detail="Failed to authorize user.")
+def rate_profile(rating: models.Rating, token: Annotated[str, Depends(oauth2_bearer)]):
+    """Submits a rating for a profile."""
+    # Validate the token
+    if decode_access_token(token) != rating.rater_name:
+        raise HTTPException(status_code=403, detail="Could not create rating: authorization error.")
 
+    # Validate the ratings
     if not 1 <= rating.rating <= 5:
         raise HTTPException(status_code=400, detail="Invalid rating. Rating must be between 1-5.")
 
+    # Validate the username
+    if rating.rater_name == rating.rated_name:
+        raise HTTPException(status_code=400, detail="Cannot rate self.")
+
     status = rating_manager.rate_profile(rating.rater_name, rating.rated_name, rating.rating)
 
-    update_listing_ratings(rating.rated_name)
+    if status:
+        status = listing_manager.update_listing_ratings(rating.rated_name)
 
     if status:
         return {
-            "message": f"User {rating.rater_name} has successfully rated User {rating.rated_name} a {rating.rating} out of 5.",
+            "message": f"User {rating.rater_name} rated {rating.rated_name}",
             "status": "success"
         }
     else:
@@ -36,12 +44,18 @@ def rate_profile(rating: models.Rating, current_user: dict[str, Any] = Depends(g
 
 
 @router.put("/update/")
-def update_rating(update: models.Rating):
+def update_rating(update: models.Rating, token: Annotated[str, Depends(oauth2_bearer)]):
     """Update an existing rating."""
+    # Validate the token
+    if decode_access_token(token) != update.rater_name:
+        raise HTTPException(status_code=403, detail="Could not update rating: authorization error.")
+
     status = rating_manager.update_rating(update.rater_name, update.rated_name, update.rating)
 
-    update_listing_ratings(update.rated_name)
+    if status:
+        status = listing_manager.update_listing_ratings(update.rated_name)
 
+    # If both functions succeed
     if status:
         return {
             "message": f"Rating for user {update.rated_name} has been updated.",
