@@ -34,7 +34,8 @@ def create_listing(username: str, title: str, listing_description: str = None,
             rating = rating['rating']
 
         query = '''
-        INSERT INTO listings (user_id, date, title, listing_description, latitude, longitude, street_address, avg_user_rating)
+        INSERT INTO listings (user_id, date, title, listing_description, latitude,
+        longitude, street_address, avg_user_rating)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         '''
 
