@@ -49,9 +49,11 @@ async function login(username, password) {
 // PROFILES
 async function updateProfile(updateData) {
   try {
+    const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
     const response = await fetch(`http://localhost:5001/profiles/update/`, {
       method: "PUT",
       headers: {
+        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
         "Content-Type": "application/json",
       },
       body: JSON.stringify(updateData),
@@ -82,9 +84,11 @@ async function getProfile(username) {
 // USER
 async function updateUser(updateData) {
   try {
+    const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
     const response = await fetch(`http://localhost:5001/user/update/`, {
       method: "PUT",
       headers: {
+        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
         "Content-Type": "application/json",
       },
       body: JSON.stringify(updateData),
@@ -154,9 +158,11 @@ async function getCurrentUser() {
 // LISTINGS
 async function createListing(listingData) {
   try {
+    const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
     const response = await fetch("http://localhost:5001/listings/", {
       method: "POST",
       headers: {
+        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
         "Content-Type": "application/json",
       },
       body: JSON.stringify(listingData),
@@ -172,9 +178,11 @@ async function createListing(listingData) {
 
 async function updateListing(updateData) {
   try {
+    const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
     const response = await fetch(`http://localhost:5001/listings/update/`, {
       method: "PUT",
       headers: {
+        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
         "Content-Type": "application/json",
       },
       body: JSON.stringify(updateData),
@@ -190,9 +198,11 @@ async function updateListing(updateData) {
 
 async function deleteListing(listingId) {
   try {
+    const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
     const response = await fetch(
       `http://localhost:5001/listings/${listingId}`,
       {
+        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
         method: "DELETE",
       }
     );
@@ -247,9 +257,11 @@ async function rateProfile(ratingData) {
 
 async function updateRating(updateData) {
   try {
+    const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
     const response = await fetch(`http://localhost:5001/ratings/update/`, {
       method: "PUT",
       headers: {
+        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
         "Content-Type": "application/json",
       },
       body: JSON.stringify(updateData),
