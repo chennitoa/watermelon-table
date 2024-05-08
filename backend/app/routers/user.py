@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from typing import Any
+from typing import Annotated, Any
 
-from . import auth
+from .auth import get_current_user, oauth2_bearer
 from ..models import models
 from ..services.db import user_manager
+from ..services.oauth import decode_access_token
 
 
 router = APIRouter(
@@ -14,8 +15,12 @@ router = APIRouter(
 
 
 @router.put("/update/")
-def update_user_details(update: models.UpdateUserDetails):
+def update_user_details(update: models.UpdateUserDetails, token: Annotated[str, Depends(oauth2_bearer)]):
     """Update an existing profile."""
+    # Validate the token
+    if decode_access_token(token) != update.username:
+        raise HTTPException(status_code=403, detail="Could not update user details: authorization error.")
+
     status = user_manager.update_user(update.username, update.email, update.first_name, update.last_name,
                                       update.new_username)
 
@@ -57,7 +62,7 @@ def get_user_details_from_user_id(user_id: str):
 
 
 @router.get("/")
-async def get_current_user(user: dict[str, Any] = Depends(auth.get_current_user)):
+async def get_signed_in_user(user: dict[str, Any] = Depends(get_current_user)):
     """Get the profile of the signed-in user."""
     if user is None:
         raise HTTPException(status_code=401, detail="Failed to authorize user.")

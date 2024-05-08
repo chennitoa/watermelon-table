@@ -1,8 +1,12 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
+from typing import Annotated
+
+from .auth import oauth2_bearer
 from ..models import models
-from ..services.db import listing_manager
+from ..services.db import listing_manager, user_manager
 from ..services.gmaps import gmaps_api
+from ..services.oauth import decode_access_token
 
 
 router = APIRouter(
@@ -11,9 +15,13 @@ router = APIRouter(
 )
 
 
-# Create new listing
 @router.post("/")
-def create_listing(listing: models.Listing):
+def create_listing(listing: models.Listing, token: Annotated[str, Depends(oauth2_bearer)]):
+    """Create a new listing."""
+    # Validate the token
+    if decode_access_token(token) != listing.username:
+        raise HTTPException(status_code=403, detail="Cannot create listing: authorization error.")
+
     # Calculate the location first
     if listing.location is not None:
         try:
@@ -35,9 +43,18 @@ def create_listing(listing: models.Listing):
         raise HTTPException(status_code=409, detail=f"Failed to create listing for user {listing.username}.")
 
 
-# Update an existing listing
 @router.put("/update/")
-def update_listing(update: models.UpdateListing):
+def update_listing(update: models.UpdateListing, token: Annotated[str, Depends(oauth2_bearer)]):
+    """Update an existing listing."""
+    # Validate the token
+    listing = listing_manager.get_listing(update.listing_id)
+    if listing is None:
+        raise HTTPException(status_code=404, detail="Invalid listing ID.")
+    user = user_manager.get_user(listing["user_id"], is_username=False)
+
+    if decode_access_token(token) != user["username"]:
+        raise HTTPException(status_code=403, detail="Cannot update listing: authorization error.")
+
     # Calculate the location first
     if update.location is not None:
         try:
@@ -59,9 +76,18 @@ def update_listing(update: models.UpdateListing):
         raise HTTPException(status_code=409, detail=f"Failed to update listing {update.listing_id}.")
 
 
-# Delete an existing listing
 @router.delete("/delete/{listing_id}")
-def delete_listing(listing_id: int):
+def delete_listing(listing_id: int, token: Annotated[str, Depends(oauth2_bearer)]):
+    """Delete an existing listing."""
+    # Validate the token
+    listing = listing_manager.get_listing(listing_id)
+    if listing is None:
+        raise HTTPException(status_code=404, detail="Invalid listing ID.")
+    user = user_manager.get_user(listing["user_id"], is_username=False)
+
+    if decode_access_token(token) != user["username"]:
+        raise HTTPException(status_code=403, detail="Cannot delete listing: authorization error.")
+
     status = listing_manager.delete_listing(listing_id)
 
     if status:
