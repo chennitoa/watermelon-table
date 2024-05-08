@@ -76,7 +76,7 @@ def get_rating(username: str):
             "status": "success"
         }
     else:
-        raise HTTPException(status_code=404, detail="Failed to find user.")
+        raise HTTPException(status_code=404, detail="Failed to find rating.")
 
 
 @router.post("/get/")
@@ -90,7 +90,7 @@ def get_specific_rating(rater_name: str, rated_name: str):
             "status": "success"
         }
     else:
-        raise HTTPException(status_code=404, detail="Failed to find user.")
+        raise HTTPException(status_code=404, detail="Failed to find ratings.")
 
 
 @router.get("/average/{username}")
@@ -104,4 +104,4 @@ def get_user_rating(username: str):
             "status": "success"
         }
     else:
-        raise HTTPException(status_code=404, detail="Failed to find user.")
+        raise HTTPException(status_code=404, detail="Failed to find rating.")
