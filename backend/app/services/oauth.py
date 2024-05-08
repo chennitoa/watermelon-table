@@ -2,8 +2,13 @@ from jose import jwt
 from passlib.context import CryptContext
 
 from datetime import datetime
+import os
 
 from .db.auth_manager import get_auth
+
+
+SECRET_KEY = os.getenv('SECRET_KEY')
+ALGORITHM = 'HS256'
 
 
 def authenticate(username: str, password: str, bcrypt_context: CryptContext) -> bool:
@@ -26,7 +31,7 @@ def authenticate(username: str, password: str, bcrypt_context: CryptContext) -> 
         return False  # Some other case, False by default
 
 
-def create_access_token(username: str, secret: str, algo: str) -> str:
+def create_access_token(username: str) -> str:
     """Creates a token to log in.
 
     Args:
@@ -37,4 +42,27 @@ def create_access_token(username: str, secret: str, algo: str) -> str:
         The access token.
     """
     return jwt.encode({'sub': username, 'iat': datetime.now()},
-                      secret, algorithm=algo)
+                      SECRET_KEY, algorithm=ALGORITHM)
+
+
+def decode_access_token(access_token: str) -> str | None:
+    """Gets the username of the access token.
+
+    Args:
+        access_token (str): The access token to extract the username from.
+
+    Returns:
+        The username if the function is successful, else None
+    """
+    try:
+        # Decode the token to get the result
+        payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get('sub')
+        if not username:
+            # Something with the decoding process failed
+            return None
+        else:
+            return username
+    except Exception:
+        # Invalid token, etc.
+        return None
