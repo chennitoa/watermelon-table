@@ -19,6 +19,13 @@ def rate_profile(rater_name: str, rated_name: str, rating: int):
     with connect() as conn:
         cursor = conn.cursor()
 
+        # Check if rater and rated exist
+        rater = get_user(rater_name, is_username=True)
+        rated = get_user(rated_name, is_username=True)
+
+        if not rater or not rated:
+            return False
+
         # Ensure users cannot rate themselves
         if rater_name == rated_name:
             return False
@@ -31,10 +38,10 @@ def rate_profile(rater_name: str, rated_name: str, rating: int):
 
             return True
 
-        query = '''
+        query = """
         INSERT INTO ratings (rater_name, rated_name, rating, rated_date)
         VALUES (%s, %s, %s, %s)
-        '''
+        """
 
         values = (
             rater_name,
@@ -71,12 +78,12 @@ def update_rating(rater_name: str, rated_name: str, rating: int):
         if not existing:
             return False
 
-        query = '''
+        query = """
         UPDATE ratings SET
         rating = COALESCE(%s, rating),
         rated_date = %s
         WHERE rater_name = %s AND rated_name = %s
-        '''
+        """
 
         values = (
             rating,
@@ -164,7 +171,11 @@ def get_user_rating(username: str):
     ratings = get_ratings(username, is_rater=False)
 
     if not ratings:
-        return None
+        # Return base rating of zero
+        return {
+            "rating": 0.0,
+            "total_ratings": 0
+        }
 
     # num = Sum of ratings
     # den = Total number of ratings
