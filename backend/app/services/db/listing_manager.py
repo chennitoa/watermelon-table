@@ -33,11 +33,11 @@ def create_listing(username: str, title: str, listing_description: str = None,
         else:
             rating = rating['rating']
 
-        query = '''
+        query = """
         INSERT INTO listings (user_id, date, title, listing_description, latitude,
         longitude, street_address, avg_user_rating)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        '''
+        """
 
         values = (
             user_details['user_id'],
@@ -181,7 +181,7 @@ def update_listing(listing_id: int, title: str = None, listing_description: str 
         if not listing:
             return False
 
-        query = '''
+        query = """
         UPDATE listings
         SET title = COALESCE(%s, title),
         listing_description = COALESCE(%s, listing_description),
@@ -189,7 +189,7 @@ def update_listing(listing_id: int, title: str = None, listing_description: str 
         longitude = COALESCE(%s, longitude),
         street_address = COALESCE(%s, street_address)
         WHERE listing_id = %s
-        '''
+        """
 
         values = (
             title,
@@ -227,11 +227,11 @@ def update_listing_ratings(username: str):
         if not user_id:
             return False
 
-        query = '''
+        query = """
         UPDATE listings
         SET avg_user_rating = %s
         WHERE user_id = %s
-        '''
+        """
 
         values = (
             get_user_rating(username)['rating'],
@@ -261,10 +261,10 @@ def delete_listing(listing_id: int) -> bool:
         if not listing:
             return False
 
-        query = '''
+        query = """
         DELETE FROM listings
         WHERE listing_id = %s
-        '''
+        """
 
         cursor.execute(query, (listing_id, ))
         conn.commit()
