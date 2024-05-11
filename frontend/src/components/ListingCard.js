@@ -9,6 +9,7 @@ import CardActions from '@mui/material/CardActions';
 import { Link } from 'react-router-dom';
 import { getCurrentUser } from '../client';
 import Tooltip from '@mui/material/Tooltip';
+import { FaStar } from "react-icons/fa";
 
 export default function ListingCard({ listing }) {
   const [loggedIn, setLoggedIn] = React.useState(false);
@@ -64,6 +65,9 @@ export default function ListingCard({ listing }) {
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ fontSize: '1.2rem', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical' }}>
             Posted by: {listing.username}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ fontSize: '1.2rem', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical' }}>
+              User Rating: {listing.avg_user_rating.toFixed(1)}<FaStar style={{ color: 'gold' }} />/5
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ fontSize: '1.2rem', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical' }}>
             Address: {listing.street_address}
