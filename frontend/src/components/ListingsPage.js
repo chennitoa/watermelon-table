@@ -13,6 +13,7 @@ import { Autocomplete } from '@react-google-maps/api';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
+import Tooltip from '@mui/material/Tooltip';
 
 export default function ListingsPage() {
   const [tabValue, setTabValue] = useState(0);
@@ -23,14 +24,23 @@ export default function ListingsPage() {
   // const [currentUserId, setUserId] = useState(0);
   const [confirmationMessage, setConfirmationMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [loggedIn, setLoggedIn] = useState(false);
   const locationRef = useRef();
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const user = await getCurrentUser(); 
-        setUsername(user.username);
-        // setUserId(user.result.user_id);
+        console.log(user);
+        if (user["detail"]) { // failed login
+          setLoggedIn(false);
+        }
+        else {
+          setLoggedIn(true);
+          setUsername(user.username);
+          // setUserId(user.result.user_id);
+        } 
+        
       } catch (error) {
         console.error('Failed to fetch profile:', error);
       }
@@ -135,7 +145,15 @@ export default function ListingsPage() {
         <Container>
           <Tabs value={tabValue} onChange={(event, newValue) => setTabValue(newValue)} centered sx={{ paddingRight: '35px' }}>
             <Tab label="Search & Listings" />
-            <Tab label="Create Listing" />
+            {loggedIn ? (
+              <Tab label="Create Listing" />
+            ) : (
+              <Tooltip title="Sign up or login to access create listing">
+                <span>
+                  <Tab label="Create Listing" disabled />
+                </span>
+              </Tooltip>
+            )}
           </Tabs>
           <TabPanel value={tabValue} index={0}>
             <SearchBar onSearchResults={handleSearchResults}/>
