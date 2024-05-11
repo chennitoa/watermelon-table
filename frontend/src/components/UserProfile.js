@@ -46,6 +46,7 @@ const UserProfile = () => {
   const [allRatings, setAllRatings] = useState(null);
   const [userRating, setUserRating] = useState(null);
   const [postRating, setPostRating] = useState(1);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,7 +60,13 @@ const UserProfile = () => {
         const data2 = await getUserWithUsername(username);
         setUserData(data2["result"]);
         const user = await getCurrentUser();
-        setLoggedInUser(user.username);
+        if (user["detail"]) {
+          setLoggedIn(false);
+        }
+        else {
+          setLoggedIn(true);
+          setLoggedInUser(user.username);
+        }
         const ratings = await getAllRatings(username);
         setAllRatings(ratings["result"]);
         console.log(ratings["result"]);
@@ -154,9 +161,9 @@ const UserProfile = () => {
 
   const tabData = [
     { id: "profile", label: "Profile" },
-    { id: "editProfile", label: "Edit Profile", disabled: isOtherUser },
+    { id: "editProfile", label: "Edit Profile", disabled: isOtherUser || !loggedIn },
     { id: "ratings", label: "Ratings" },
-    { id: "rateProfile", label: "Rate Profile", disabled: isMyProfile }
+    { id: "rateProfile", label: "Rate Profile", disabled: isMyProfile || !loggedIn }
   ]
 
   function GenderSelect() {
