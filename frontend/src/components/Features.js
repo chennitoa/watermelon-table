@@ -19,9 +19,30 @@ const items = [
     imageDark: 'url("/static/images/templates/templates-images/dash-dark.png")',
   },
   {
+    title: 'Search for listings',
+    description:
+      'Search listings by username, title, description, rating, or location.',
+    imageLight: 'url("/static/images/templates/templates-images/dash-light.png")',
+    imageDark: 'url("/static/images/templates/templates-images/dash-dark.png")',
+  },
+  {
     title: 'Profile creator',
     description:
-      'Profile creator so that people can list a description of themselves, their profile picture, interests, etc.',
+      'Create and edit your profile to describe more about yourself with a profile picture description, and interests.',
+    imageLight: 'url("/static/images/templates/templates-images/mobile-light.png")',
+    imageDark: 'url("/static/images/templates/templates-images/mobile-dark.png")',
+  },
+  {
+    title: 'Rate profiles',
+    description:
+      "Rate other user profiles to give more credibility and recognition for that user.",
+    imageLight: 'url("/static/images/templates/templates-images/mobile-light.png")',
+    imageDark: 'url("/static/images/templates/templates-images/mobile-dark.png")',
+  },
+  {
+    title: 'Built-in messaging',
+    description:
+      "Select a listing and message that user about the listing in order to confirm the job position.",
     imageLight: 'url("/static/images/templates/templates-images/mobile-light.png")',
     imageDark: 'url("/static/images/templates/templates-images/mobile-dark.png")',
   },
