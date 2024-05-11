@@ -50,9 +50,9 @@ export default function Hero() {
               variant="contained" 
               color="primary"
               component="a"
-              href="/sign-in"
+              href="/listings"
             >
-              Start now
+              Find listings
             </Button>
           </Stack>
         </Stack>
