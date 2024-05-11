@@ -7,8 +7,12 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import CardActions from '@mui/material/CardActions';
 import { Link } from 'react-router-dom';
+import { getCurrentUser } from '../client';
+import Tooltip from '@mui/material/Tooltip';
 
 export default function ListingCard({ listing }) {
+  const [loggedIn, setLoggedIn] = React.useState(false);
+
   const currentDate = new Date(listing.date);
   const pacificTimeZoneOffset = -7 * 60 * 60 * 1000; // PST is 8 hours behind UTC
   const dateInPST = new Date(currentDate.getTime() + pacificTimeZoneOffset);
@@ -22,6 +26,20 @@ export default function ListingCard({ listing }) {
     hour: 'numeric',
     minute: 'numeric',
   });
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const user = await getCurrentUser();
+        setLoggedIn(!user["detail"]);
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+        // Optionally handle the error, e.g., show an error message
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const [open, setOpen] = React.useState(false);
 
@@ -86,7 +104,11 @@ export default function ListingCard({ listing }) {
               </Typography>
             </CardContent>
             <CardActions sx={{justifyContent: "center"}}>
-              <Button size="large" onClick={handleClose}>Accept</Button>
+              <Tooltip title="Sign up or login to accept the listing">
+                <span>
+                  <Button size="large" disabled={!loggedIn}>Accept</Button>
+                </span>
+              </Tooltip>
               <Button size="large" onClick={handleClose}>Close</Button>
             </CardActions>
           </Card>
