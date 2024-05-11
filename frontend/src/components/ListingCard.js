@@ -104,11 +104,17 @@ export default function ListingCard({ listing }) {
               </Typography>
             </CardContent>
             <CardActions sx={{justifyContent: "center"}}>
-              <Tooltip title="Sign up or login to accept the listing">
-                <span>
-                  <Button size="large" disabled={!loggedIn}>Accept</Button>
-                </span>
-              </Tooltip>
+              {
+                loggedIn ? (
+                  <Button size="large" onClick={handleClose} disabled={!loggedIn}>Accept</Button>
+                ) : (
+                  <Tooltip title="Sign up or login to accept the listing">
+                    <span>
+                      <Button size="large" onClick={handleClose} disabled={!loggedIn}>Accept</Button>
+                    </span>
+                  </Tooltip>
+                )
+              }
               <Button size="large" onClick={handleClose}>Close</Button>
             </CardActions>
           </Card>
