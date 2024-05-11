@@ -2,10 +2,11 @@ FROM node:18-alpine
 
 WORKDIR /rentafriend-frontend
 
-COPY public/ /rentafriend-frontend/public
-COPY src/ /rentafriend-frontend/src
-COPY package.json /rentafriend-frontend/
+COPY package.json .
 
 RUN npm install
+
+COPY public/ ./public
+COPY src/ ./src
 
 CMD ["npm", "start"]
