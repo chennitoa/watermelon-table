@@ -1,9 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from jose import jwt
 from passlib.context import CryptContext
 
-import os
 from typing import Annotated
 
 from ..models import models
@@ -15,9 +13,6 @@ router = APIRouter(
     prefix='/auth',
     tags=['auth']
 )
-
-SECRET_KEY = os.getenv('SECRET_KEY')
-ALGORITHM = 'HS256'
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl="auth/login/")
@@ -50,7 +45,7 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     auth_success = oauth.authenticate(form_data.username, form_data.password, bcrypt_context)
     if not auth_success:
         raise HTTPException(status_code=401, detail="Failed to authorize user.")
-    token = oauth.create_access_token(form_data.username, SECRET_KEY, ALGORITHM)
+    token = oauth.create_access_token(form_data.username)
 
     return {'access_token': token, 'token_type': 'bearer'}
 
@@ -58,8 +53,7 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
 async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
     """Get the current signed-in user."""
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username = payload.get('sub')
+        username = oauth.decode_access_token(token)
         if not username:
             raise HTTPException(status_code=401, detail="Failed to authorize user.")
         return user_manager.get_user(username, is_username=True)

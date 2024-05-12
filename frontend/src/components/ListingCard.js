@@ -8,8 +8,13 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import CardActions from '@mui/material/CardActions';
 import { Link } from 'react-router-dom';
+import { getCurrentUser } from '../client';
+import Tooltip from '@mui/material/Tooltip';
+import { FaStar } from "react-icons/fa";
 
-export default function ListingCard({ listing, currentUserId }) {
+export default function ListingCard({ listing, currentUserId}) {
+  const [loggedIn, setLoggedIn] = React.useState(false);
+
   const currentDate = new Date(listing.date);
   const pacificTimeZoneOffset = -7 * 60 * 60 * 1000; // PST is 8 hours behind UTC
   const dateInPST = new Date(currentDate.getTime() + pacificTimeZoneOffset);
@@ -24,6 +29,20 @@ export default function ListingCard({ listing, currentUserId }) {
     hour: 'numeric',
     minute: 'numeric',
   });
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const user = await getCurrentUser();
+        setLoggedIn(!user["detail"]);
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+        // Optionally handle the error, e.g., show an error message
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const [open, setOpen] = React.useState(false);
 
@@ -55,6 +74,9 @@ export default function ListingCard({ listing, currentUserId }) {
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ fontSize: '1.2rem', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical' }}>
             Posted by: {listing.username}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ fontSize: '1.2rem', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical' }}>
+              User Rating: {listing.avg_user_rating.toFixed(1)}<FaStar style={{ color: 'gold' }} />/5
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ fontSize: '1.2rem', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical' }}>
             Address: {listing.street_address}
@@ -95,7 +117,17 @@ export default function ListingCard({ listing, currentUserId }) {
               </Typography>
             </CardContent>
             <CardActions sx={{justifyContent: "center"}}>
-              <Button size="large" onClick={handleMessage}>Message</Button>
+              {
+                loggedIn ? (
+                  <Button size="large" onClick={handleMessage} disabled={!loggedIn}>Message</Button>
+                ) : (
+                  <Tooltip title="Sign up or login to accept the listing">
+                    <span>
+                      <Button size="large" onClick={handleMessage} disabled={!loggedIn}>Message</Button>
+                    </span>
+                  </Tooltip>
+                )
+              }
               <Button size="large" onClick={handleClose}>Close</Button>
             </CardActions>
           </Card>

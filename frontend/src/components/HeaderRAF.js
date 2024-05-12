@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
 import MessageIcon from "@mui/icons-material/Message";
+import Tooltip from "@mui/material/Tooltip";
 import { Link } from "react-router-dom";
 import { getCurrentUser, getProfile } from "../client";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +15,7 @@ function HeaderRAF() {
   const [currentUserId, setUserId] = useState(0);
   const [profilePicture, setProfilePicture] = useState('')
   const navigate = useNavigate();
+  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -23,12 +25,24 @@ function HeaderRAF() {
         setUserId(user.user_id);
         const data = await getProfile(user.username);
         setProfilePicture(data['result']['profile_picture']);
+        console.log(user);
+        if (user["detail"]) { // failed login
+          setLoggedIn(false);
+        }
+        else {
+          setLoggedIn(true);
+          setUsername(user.username);
+          const data = await getProfile(user.username);
+          setProfilePicture(data['result']['profile_picture']);
+        }      
       } catch (error) {
         console.error('Failed to fetch profile:', error);
       }
     };
     fetchUser();
   }, []);
+
+  console.log(loggedIn);
 
   const handleSignOut = () => {
     // Clear access token from localStorage
@@ -50,6 +64,22 @@ function HeaderRAF() {
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Button component={Link} to={`/dms/${currentUserId}`} variant="contained" startIcon={<MessageIcon />}>My DMs</Button>
         <Button component={Link} to="/listings" variant="contained" >Listings</Button>
+        {loggedIn ? (
+          <Button component={Link} to="/dms" variant="contained" startIcon={<MessageIcon />}>
+            My DMs
+          </Button>
+        ) : (
+          <Tooltip title="Sign up or login to access DMs">
+            <span>
+              <Button disabled variant="contained">
+                My DMs
+              </Button>
+            </span>
+          </Tooltip>
+        )}
+        <Button component={Link} to="/listings" variant="contained">
+          Listings
+        </Button>
       </Box>
       <Typography
         variant="h1"
@@ -80,8 +110,12 @@ function HeaderRAF() {
         </Typography>
       </Typography>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <Button component={Link} to={`/profile/${currentUsername}`} variant="contained" startIcon={<Avatar src={profilePicture}/>}>{currentUsername}</Button>
-        <Button onClick={handleSignOut} component={Link} to="/sign-in" variant="contained" >Sign Out</Button> 
+        {!loggedIn && <Button component={Link} to="/" variant="contained" >Home</Button>}
+        {!loggedIn && <Button component={Link} to="/sign-in" variant="contained" >Sign In</Button>}
+        {!loggedIn && <Button component={Link} to="/sign-up" variant="contained" >Sign Up</Button>}
+    
+        {loggedIn && <Button component={Link} to={`/profile/${currentUsername}`} variant="contained" startIcon={<Avatar src={profilePicture}/>}>{currentUsername}</Button>}
+        {loggedIn && <Button onClick={handleSignOut} component={Link} to="/" variant="contained" >Sign Out</Button>}
         {/* delete the session/access token */}
       </Box>
     </Box>

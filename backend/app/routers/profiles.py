@@ -1,7 +1,11 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
+from typing import Annotated
+
+from .auth import oauth2_bearer
 from ..models import models
 from ..services.db import profile_manager
+from ..services.oauth import decode_access_token
 
 
 router = APIRouter(
@@ -11,8 +15,12 @@ router = APIRouter(
 
 
 @router.put("/update/")
-def update_profile(update: models.UpdateProfile):
+def update_profile(update: models.UpdateProfile, token: Annotated[str, Depends(oauth2_bearer)]):
     """Update an existing profile."""
+    # Validate the token
+    if decode_access_token(token) != update.username:
+        raise HTTPException(status_code=403, detail="Cannot update profile: authorization error.")
+
     status = profile_manager.update_profile(update.username, update.description, update.profile_picture,
                                             update.interest1, update.interest2, update.interest3, update.gender)
 
