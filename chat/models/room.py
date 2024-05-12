@@ -1,6 +1,5 @@
 """ Model class for chat rooms """
-import json
-from bson import ObjectId, json_util
+from bson import ObjectId
 from pydantic import BaseModel
 
 class Room (BaseModel):

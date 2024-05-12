@@ -31,7 +31,6 @@ services:
     ports:
       - "8001:8001"
 
-
   database:
     container_name: db
     build:

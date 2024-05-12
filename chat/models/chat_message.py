@@ -2,7 +2,7 @@
     Model class for chat messages
 """
 from pydantic import BaseModel
-from bson import ObjectId, json_util
+from bson import ObjectId
 
 
 class ChatMessage(BaseModel):

@@ -16,9 +16,8 @@ from pymongo.mongo_client import MongoClient
 from pymongo.collection import Collection
 from bson import ObjectId
 import asyncio
-import os
+from bson import json_util
 import json
-import uuid
 
 app = FastAPI()
 origins = [
@@ -119,3 +118,12 @@ async def handle_connect_to_room(websocket: WebSocket,
         api_logger.info("Client disconnected")
         chat_manager.disconnect(websocket, room_id)
 
+@app.websocket("/get_rooms/{user_id}")
+async def get_rooms(websocket: WebSocket,user_id: str):
+    '''
+        Function to get all the rooms of a user
+    '''
+    await websocket.accept()
+    rooms = rooms_data.get_all_sender_rooms(user_id)
+    await websocket.send_json(json_util.dumps(rooms))
+    return rooms

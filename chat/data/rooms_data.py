@@ -38,7 +38,6 @@ class RoomsData:
                 return None
             room_dict = self.rooms_collection.find_one({
                 "room_tup": {
-                    # "$all": ["21389yh9fh193hr", "ubiefdshfiuesh92392189"]
                     "$all": room_tup
                 }
             })  
@@ -69,11 +68,17 @@ class RoomsData:
         '''
         # use pymongo to get the room from the database
         try:
-            self.logger.info("Getting all rooms of " + sender + "from the database")
-            rooms_cursor = self.rooms_collection.find({"name": sender})
-            print(rooms_cursor)
-            return [Room(**room) for room in rooms_cursor]
+            self.logger.info("Getting all rooms of user id: " + sender + " from the database")
+            rooms_cursor = self.rooms_collection.find({
+                "room_tup": {
+                    "$all": [sender]
+                }
+            })
+            rooms = []
+            for room_dict in rooms_cursor:
+                room = Room(room_id=room_dict["_id"], room_tup=room_dict["room_tup"], name=room_dict["name"], description=room_dict["description"])
+                rooms.append(room.to_dict())
+            return rooms
         except Exception as error:
             self.logger.error(error)
             return None
-        # return list(self.rooms.values())

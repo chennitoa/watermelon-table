@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useNavigate } from "react-router-dom";
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import Card from '@mui/material/Card';
@@ -8,10 +9,11 @@ import Divider from '@mui/material/Divider';
 import CardActions from '@mui/material/CardActions';
 import { Link } from 'react-router-dom';
 
-export default function ListingCard({ listing }) {
+export default function ListingCard({ listing, currentUserId }) {
   const currentDate = new Date(listing.date);
   const pacificTimeZoneOffset = -7 * 60 * 60 * 1000; // PST is 8 hours behind UTC
   const dateInPST = new Date(currentDate.getTime() + pacificTimeZoneOffset);
+  const navigate = useNavigate();
 
   // Format the date using toLocaleString() with options
   const formattedDate = dateInPST.toLocaleString('en-US', {
@@ -32,6 +34,13 @@ export default function ListingCard({ listing }) {
   const handleClose = () => {
     setOpen(false);
   };
+
+  const handleMessage = () => {
+    if (currentUserId === listing.user_id) {
+      return;
+    }
+    navigate(`/chat/${currentUserId}/${listing.user_id}`, { state: { receiverUsername: listing.username }});
+  }
 
   return (
     <>
@@ -55,7 +64,7 @@ export default function ListingCard({ listing }) {
           </Typography>
         </CardContent>
         <CardActions>
-          <Button size="large">Message</Button>
+          <Button size="large" onClick={handleClose}>Accept</Button>
         </CardActions>
       </Card>
       <Modal
@@ -86,7 +95,7 @@ export default function ListingCard({ listing }) {
               </Typography>
             </CardContent>
             <CardActions sx={{justifyContent: "center"}}>
-              <Button size="large" onClick={handleClose}>Accept</Button>
+              <Button size="large" onClick={handleMessage}>Message</Button>
               <Button size="large" onClick={handleClose}>Close</Button>
             </CardActions>
           </Card>

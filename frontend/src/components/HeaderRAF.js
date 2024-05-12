@@ -6,27 +6,29 @@ import Avatar from "@mui/material/Avatar";
 import MessageIcon from "@mui/icons-material/Message";
 import { Link } from "react-router-dom";
 import { getCurrentUser, getProfile } from "../client";
+import { useNavigate } from "react-router-dom";
+
 
 function HeaderRAF() {
   const [currentUsername, setUsername] = useState('');
+  const [currentUserId, setUserId] = useState(0);
   const [profilePicture, setProfilePicture] = useState('')
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const user = await getCurrentUser(); 
         setUsername(user.username);
+        setUserId(user.user_id);
         const data = await getProfile(user.username);
         setProfilePicture(data['result']['profile_picture']);
       } catch (error) {
         console.error('Failed to fetch profile:', error);
       }
     };
-
     fetchUser();
   }, []);
-
-  console.log()
 
   const handleSignOut = () => {
     // Clear access token from localStorage
@@ -46,7 +48,7 @@ function HeaderRAF() {
       sx={{ backgroundColor: '#B3BFB8' }} // Background color set to light shade of orange
     >
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <Button component={Link} to="/dms" variant="contained" startIcon={<MessageIcon />}>My DMs</Button>
+        <Button component={Link} to={`/dms/${currentUserId}`} variant="contained" startIcon={<MessageIcon />}>My DMs</Button>
         <Button component={Link} to="/listings" variant="contained" >Listings</Button>
       </Box>
       <Typography

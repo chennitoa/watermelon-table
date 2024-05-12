@@ -9,6 +9,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import UserProfile from './components/UserProfile.js';
 import ListingsPage from './components/ListingsPage.js';
 import Chat from './components/chat/Chat.js';
+import DirectMessagesList from './components/chat/DirectMessagesList.js';
 
 function App() {
   const mode = React.useState('light');
@@ -24,7 +25,8 @@ function App() {
             <Route path="/listings" element={<ListingsPage />} />
             <Route path="/" element={<HomePage />} />
             <Route path="/profile/:username" element={<UserProfile />} />
-            <Route path="/chat" element={<Chat sender="testSender" receiver="testReceiver" username="Bob"/>} />
+            <Route path="/chat/:senderId/:receiverId" element={<Chat/>}/>
+            <Route path="/dms/:userId" element={<DirectMessagesList/>}/>
           </Routes>
         </Router>
       </ThemeProvider>

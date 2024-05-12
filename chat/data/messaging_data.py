@@ -28,7 +28,6 @@ class MessageData:
         '''
             Adds a message to the list
         '''
-
         try:
             # use pymongo to insert the message to the database
             # ensure document is updated if it already exists
