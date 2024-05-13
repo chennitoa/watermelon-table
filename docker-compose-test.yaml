@@ -23,6 +23,13 @@ services:
       - "5001:5000"
     depends_on:
       - database
+      
+  chat:
+    build: ./chat
+    environment:
+      - MONGO_URI=${MONGO_URI}
+    ports:
+      - "8001:8001"
 
   database:
     container_name: db

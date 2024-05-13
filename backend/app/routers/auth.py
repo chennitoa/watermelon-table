@@ -24,7 +24,6 @@ async def signup(user: models.SignupDetails):
     user_status = user_manager.create_user(user.username, user.email, user.first_name, user.last_name,
                                            user.password, bcrypt_context)
     profile_status = profile_manager.create_profile(user.username)  # Create a default empty profile
-
     if user_status:
         if profile_status:
             return {

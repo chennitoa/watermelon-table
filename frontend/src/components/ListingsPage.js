@@ -5,7 +5,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import HeaderRAF from './HeaderRAF';
 import SearchBar from './SearchBar';
-import { getCurrentUser, createListing, getListing, getUserWithUserId } from '../client';
+import { getCurrentUser, createListing, getListing, getUserWithUserId} from '../client';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import ListingCard from './ListingCard';
@@ -21,7 +21,7 @@ export default function ListingsPage() {
   const [description, setDescription] = useState('');
   const [listings, setListings] = useState([]);
   const [currentUsername, setUsername] = useState('');
-  // const [currentUserId, setUserId] = useState(0);
+  const [currentUserId, setUserId] = useState(0);
   const [confirmationMessage, setConfirmationMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);
@@ -31,21 +31,20 @@ export default function ListingsPage() {
     const fetchProfile = async () => {
       try {
         const user = await getCurrentUser(); 
-        console.log(user);
         if (user["detail"]) { // failed login
           setLoggedIn(false);
         }
         else {
           setLoggedIn(true);
           setUsername(user.username);
-          // setUserId(user.result.user_id);
+          setUserId(user.user_id);
         } 
         
       } catch (error) {
         console.error('Failed to fetch profile:', error);
       }
     };
-
+    
     fetchProfile();
   }, []);
 
@@ -83,7 +82,6 @@ export default function ListingsPage() {
           const userData = await getUserWithUserId(listing.user_id);
           return { ...listing, username: userData.result.username };
         }));
-
         setListings(updatedListings);
       } catch (error) {
         console.error('Failed to fetch data:', error);
@@ -105,6 +103,7 @@ export default function ListingsPage() {
         description,
         location
       };
+      
       try {
         await createListing(newListing);
         const updatedListingsResponse = await getListing({
@@ -160,7 +159,9 @@ export default function ListingsPage() {
             <Grid container spacing={3}>
               {listings && listings.map((listing, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
-                  <ListingCard listing={listing} />
+                  <ListingCard listing={listing} 
+                  currentUserId={currentUserId}
+                  />
                 </Grid>
               ))}
             </Grid>

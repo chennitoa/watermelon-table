@@ -3,7 +3,4 @@
 **/__pycache__/
 *.pyc
 
-
-**/CS160venv
-
 **/node_modules

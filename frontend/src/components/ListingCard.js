@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useNavigate } from "react-router-dom";
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import Card from '@mui/material/Card';
@@ -11,12 +12,13 @@ import { getCurrentUser } from '../client';
 import Tooltip from '@mui/material/Tooltip';
 import { FaStar } from "react-icons/fa";
 
-export default function ListingCard({ listing }) {
+export default function ListingCard({ listing, currentUserId}) {
   const [loggedIn, setLoggedIn] = React.useState(false);
 
   const currentDate = new Date(listing.date);
   const pacificTimeZoneOffset = -7 * 60 * 60 * 1000; // PST is 8 hours behind UTC
   const dateInPST = new Date(currentDate.getTime() + pacificTimeZoneOffset);
+  const navigate = useNavigate();
 
   // Format the date using toLocaleString() with options
   const formattedDate = dateInPST.toLocaleString('en-US', {
@@ -38,7 +40,7 @@ export default function ListingCard({ listing }) {
         // Optionally handle the error, e.g., show an error message
       }
     };
-
+    console.log(listing)
     fetchData();
   }, []);
 
@@ -51,6 +53,13 @@ export default function ListingCard({ listing }) {
   const handleClose = () => {
     setOpen(false);
   };
+
+  const handleMessage = () => {
+    if (currentUserId === listing.user_id) {
+      return;
+    }
+    navigate(`/chat/${currentUserId}/${listing.user_id}`, { state: { receiverUsername: listing.username }});
+  }
 
   return (
     <>
@@ -77,7 +86,7 @@ export default function ListingCard({ listing }) {
           </Typography>
         </CardContent>
         <CardActions>
-          <Button size="large">Message</Button>
+          <Button size="large" onClick={handleClose}>Accept</Button>
         </CardActions>
       </Card>
       <Modal
@@ -110,11 +119,11 @@ export default function ListingCard({ listing }) {
             <CardActions sx={{justifyContent: "center"}}>
               {
                 loggedIn ? (
-                  <Button size="large" onClick={handleClose} disabled={!loggedIn}>Accept</Button>
+                  <Button size="large" onClick={handleMessage} disabled={!loggedIn}>Message</Button>
                 ) : (
                   <Tooltip title="Sign up or login to accept the listing">
                     <span>
-                      <Button size="large" onClick={handleClose} disabled={!loggedIn}>Accept</Button>
+                      <Button size="large" disabled={!loggedIn}>Message</Button>
                     </span>
                   </Tooltip>
                 )

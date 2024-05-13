@@ -10,14 +10,14 @@ import { getCurrentUser, getProfile } from "../client";
 
 function HeaderRAF() {
   const [currentUsername, setUsername] = useState('');
-  const [profilePicture, setProfilePicture] = useState('');
+  const [currentUserId, setUserId] = useState(0);
+  const [profilePicture, setProfilePicture] = useState('')
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const user = await getCurrentUser(); 
-        console.log(user);
         if (user["detail"]) { // failed login
           setLoggedIn(false);
         }
@@ -26,12 +26,13 @@ function HeaderRAF() {
           setUsername(user.username);
           const data = await getProfile(user.username);
           setProfilePicture(data['result']['profile_picture']);
-        }      
+          setUsername(user.username);
+          setUserId(user.user_id);
+        }     
       } catch (error) {
         console.error('Failed to fetch profile:', error);
       }
     };
-
     fetchUser();
   }, []);
 
@@ -56,7 +57,7 @@ function HeaderRAF() {
     >
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         {loggedIn ? (
-          <Button component={Link} to="/dms" variant="contained" startIcon={<MessageIcon />}>
+          <Button component={Link} to={`/dms/${currentUserId}`} variant="contained" startIcon={<MessageIcon />}>
             My DMs
           </Button>
         ) : (
