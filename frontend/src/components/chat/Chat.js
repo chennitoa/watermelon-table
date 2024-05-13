@@ -16,12 +16,11 @@ const Chat = () => {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-              const user = await getUserWithUserId();
+              await getUserWithUserId();
             } catch (error) {
               console.error('Failed to fetch profile:', error);
             }
           };
-        console
         if (receiverUsername === null) {
             fetchProfile();
         }

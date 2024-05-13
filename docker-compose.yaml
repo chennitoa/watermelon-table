@@ -24,6 +24,13 @@ services:
     depends_on:
       - database
 
+  chat:
+    build: ./chat
+    environment:
+      - MONGO_URI=${MONGO_URI}
+    ports:
+      - "8001:8001"
+
   database:
     container_name: db
     build:
@@ -36,5 +43,4 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
     ports:
-     - "3305:3306" 
-  
+     - "3305:3306"
