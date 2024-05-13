@@ -2,7 +2,6 @@
 import os
 from ..models.chat_message import ChatMessage
 from ..logger.logger import Logger
-from ..models.room import Room
 from bson import ObjectId
 
 from pymongo.mongo_client import MongoClient
@@ -23,7 +22,7 @@ class MessageData:
         self.data_base = self.client["chat"]
         self.messages_collection: Collection[ChatMessage] = self.data_base["messages"]
         self.logger = Logger("MessagingData")
-    
+
     def add_message(self, message: ChatMessage):
         '''
             Adds a message to the list
@@ -33,14 +32,13 @@ class MessageData:
             # ensure document is updated if it already exists
             self.logger.info("Adding message to the database")
             self.messages_collection.insert_one(message.to_dict())
-            
+
         except TypeError as error:
             self.logger.error(f"Error adding message to the database: {error}")
         except ValueError as error:
             self.logger.error(f"Error adding message to the database: {error}")
         except Exception as error:
             self.logger.error(f"Error adding message to the database: {error}")
-
 
     def get_messages_of(self, room_id: ObjectId) -> list[ChatMessage]:
         '''
@@ -50,13 +48,16 @@ class MessageData:
             # use pymongo to get the messages from the database
             self.logger.info(
                 f"Getting messages of {room_id} from the database")
-            
+
             messages_cursor = self.messages_collection.find(
                 {'room_id': room_id})
-            
+
             messages = []
             for message in messages_cursor:
-                messages.append(ChatMessage(message_id=message['_id'], user_id=message['user_id'], message=message['message'], room_id=message['room_id']))
+                messages.append(ChatMessage(message_id=message['_id'],
+                                            user_id=message['user_id'],
+                                            message=message['message'],
+                                            room_id=message['room_id']))
 
             if len(messages) == 0:
                 self.logger.info(
@@ -74,4 +75,3 @@ class MessageData:
             self.logger.error(
                 f"Error getting messages from the database: {error}")
             return []
-        

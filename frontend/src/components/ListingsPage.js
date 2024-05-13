@@ -38,7 +38,6 @@ export default function ListingsPage() {
           setLoggedIn(true);
           setUsername(user.username);
           setUserId(user.user_id);
-          // setUserId(user.result.user_id);
         } 
         
       } catch (error) {
@@ -83,7 +82,6 @@ export default function ListingsPage() {
           const userData = await getUserWithUserId(listing.user_id);
           return { ...listing, username: userData.result.username };
         }));
-        
         setListings(updatedListings);
       } catch (error) {
         console.error('Failed to fetch data:', error);

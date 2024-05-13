@@ -40,7 +40,7 @@ export default function ListingCard({ listing, currentUserId}) {
         // Optionally handle the error, e.g., show an error message
       }
     };
-
+    console.log(listing)
     fetchData();
   }, []);
 
@@ -123,7 +123,7 @@ export default function ListingCard({ listing, currentUserId}) {
                 ) : (
                   <Tooltip title="Sign up or login to accept the listing">
                     <span>
-                      <Button size="large" onClick={handleMessage} disabled={!loggedIn}>Message</Button>
+                      <Button size="large" disabled={!loggedIn}>Message</Button>
                     </span>
                   </Tooltip>
                 )

@@ -7,25 +7,17 @@ import MessageIcon from "@mui/icons-material/Message";
 import Tooltip from "@mui/material/Tooltip";
 import { Link } from "react-router-dom";
 import { getCurrentUser, getProfile } from "../client";
-import { useNavigate } from "react-router-dom";
-
 
 function HeaderRAF() {
   const [currentUsername, setUsername] = useState('');
   const [currentUserId, setUserId] = useState(0);
   const [profilePicture, setProfilePicture] = useState('')
-  const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const user = await getCurrentUser(); 
-        setUsername(user.username);
-        setUserId(user.user_id);
-        const data = await getProfile(user.username);
-        setProfilePicture(data['result']['profile_picture']);
-        console.log(user);
         if (user["detail"]) { // failed login
           setLoggedIn(false);
         }
@@ -34,7 +26,9 @@ function HeaderRAF() {
           setUsername(user.username);
           const data = await getProfile(user.username);
           setProfilePicture(data['result']['profile_picture']);
-        }      
+          setUsername(user.username);
+          setUserId(user.user_id);
+        }     
       } catch (error) {
         console.error('Failed to fetch profile:', error);
       }
@@ -62,10 +56,8 @@ function HeaderRAF() {
       sx={{ backgroundColor: '#B3BFB8' }} // Background color set to light shade of orange
     >
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <Button component={Link} to={`/dms/${currentUserId}`} variant="contained" startIcon={<MessageIcon />}>My DMs</Button>
-        <Button component={Link} to="/listings" variant="contained" >Listings</Button>
         {loggedIn ? (
-          <Button component={Link} to="/dms" variant="contained" startIcon={<MessageIcon />}>
+          <Button component={Link} to={`/dms/${currentUserId}`} variant="contained" startIcon={<MessageIcon />}>
             My DMs
           </Button>
         ) : (

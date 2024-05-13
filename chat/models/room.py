@@ -2,6 +2,7 @@
 from bson import ObjectId
 from pydantic import BaseModel
 
+
 class Room (BaseModel):
     '''
         Room dataclass for the chat
@@ -24,15 +25,15 @@ class Room (BaseModel):
             'name': self.name,
             'description': self.description,
         }
-    
+
     def get_id(self):
         return self.room_id
-    
+
     def __str__(self):
         return self.to_dict()
-    
+
     def __eq__(self, other):
         return self.room_id == other.room_id
-    
+
     def __hash__(self):
         return hash(self.room_id)

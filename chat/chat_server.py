@@ -1,23 +1,15 @@
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Response, status
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Tuple
-# import socketio
-from fastapi.responses import HTMLResponse
-from dataclasses import dataclass
-from .models.room import Room
 from .models.chat_message import ChatMessage
 from .managers.rooms_manager import RoomsManager
 from .managers.messaging_manager import MessagingManager
 from .logger.logger import Logger
 from .data.rooms_data import RoomsData
 from .data.messaging_data import MessageData
-from pymongo.mongo_client import MongoClient
-from pymongo.collection import Collection
 from bson import ObjectId
 import asyncio
 from bson import json_util
-import json
 
 app = FastAPI()
 origins = [
@@ -41,7 +33,8 @@ messages_data = MessageData()
 # Creating the logger
 api_logger = Logger("API")
 
-async def handle_add_room(room_tup:list[str]):
+
+async def handle_add_room(room_tup: list[str]):
     '''
         Function to handle new room created by a client
     '''
@@ -50,7 +43,8 @@ async def handle_add_room(room_tup:list[str]):
         return room
     else:
         return None
-    
+
+
 @app.websocket("/rooms")
 async def handle_new_connection_rooms(websocket: WebSocket):
     '''
@@ -73,9 +67,9 @@ async def handle_new_connection_rooms(websocket: WebSocket):
     except WebSocketDisconnect:
         await rooms_manager.remove_rooms_listner(websocket)
 
+
 @app.websocket("/connect-rooms/{sender}/{receiver}")
-async def handle_connect_to_room(websocket: WebSocket,
-                                        sender: str, receiver: str):
+async def handle_connect_to_room(websocket: WebSocket, sender: str, receiver: str):
     '''
         The function accepts the connection from the client
         and sends the messages to the clients of a specific room
@@ -109,7 +103,7 @@ async def handle_connect_to_room(websocket: WebSocket,
                     room_id=room_id
                 )
                 messages_data.add_message(message)
-                
+
                 # Send the message to all the clients
                 await chat_manager.broadcast(message, room_id)
 
@@ -118,8 +112,9 @@ async def handle_connect_to_room(websocket: WebSocket,
         api_logger.info("Client disconnected")
         chat_manager.disconnect(websocket, room_id)
 
+
 @app.websocket("/get_rooms/{user_id}")
-async def get_rooms(websocket: WebSocket,user_id: str):
+async def get_rooms(websocket: WebSocket, user_id: str):
     '''
         Function to get all the rooms of a user
     '''

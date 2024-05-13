@@ -25,7 +25,7 @@ class RoomsData:
         # main_room = Room(name="General", description="General room")
         # self.add_room(main_room)
 
-    def add_room(self, room_tup:list[str]) -> Room:
+    def add_room(self, room_tup: list[str]) -> Room:
         '''
             Adds a room to the data base
         '''
@@ -40,7 +40,7 @@ class RoomsData:
                 "room_tup": {
                     "$all": room_tup
                 }
-            })  
+            })
             if not room_dict:
                 room = Room(
                     room_id=ObjectId(),
@@ -54,14 +54,17 @@ class RoomsData:
                 self.logger.info("Room added to the database")
             else:
                 self.logger.info("Room found in the database")
-                room = Room(room_id=room_dict["_id"], room_tup=room_dict["room_tup"], name=room_dict["name"], description=room_dict["description"])
+                room = Room(room_id=room_dict["_id"],
+                            room_tup=room_dict["room_tup"],
+                            name=room_dict["name"],
+                            description=room_dict["description"])
             return room.get_id()
-        
+
         except Exception as error:
             self.logger.error(error)
             print("In error")
             return room.get_id()
-       
+
     def get_all_sender_rooms(self, sender) -> list[Room]:
         '''
             Gets all rooms from the data base
@@ -76,7 +79,10 @@ class RoomsData:
             })
             rooms = []
             for room_dict in rooms_cursor:
-                room = Room(room_id=room_dict["_id"], room_tup=room_dict["room_tup"], name=room_dict["name"], description=room_dict["description"])
+                room = Room(room_id=room_dict["_id"],
+                            room_tup=room_dict["room_tup"],
+                            name=room_dict["name"],
+                            description=room_dict["description"])
                 rooms.append(room.to_dict())
             return rooms
         except Exception as error:

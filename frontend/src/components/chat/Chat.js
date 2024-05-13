@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {send_websocket_message, connect_to_room} from "../../script.js";
 import { useParams, useLocation } from 'react-router-dom';
 import { getUserWithUserId } from '../../client'
@@ -21,7 +21,7 @@ const Chat = () => {
               console.error('Failed to fetch profile:', error);
             }
           };
-        
+        console
         if (receiverUsername === null) {
             fetchProfile();
         }
@@ -46,14 +46,8 @@ const Chat = () => {
     }
     
     const renderServerMessages = () => {
-        // const receiverMessages = serverMessages.filter(message => message.user_id !== senderId);
-        // return serverMessages.map((msg, index) => (
-        //     <div key={index} className="message">
-        //         {msg.message}
-        //     </div>
-        // ));
         return serverMessages.map((msg, index) => {
-            const isCurrentUser = msg.user_id === senderId; // Change specificUserId to the ID you want to compare
+            const isCurrentUser = msg.user_id === senderId; 
             const messageClass = isCurrentUser ? "right-align" : "left-align";
             return (
                 <div key={index} className={`message ${messageClass}`}>

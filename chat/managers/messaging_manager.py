@@ -2,7 +2,6 @@
     Class to manage the messaging
 """
 from fastapi import WebSocket
-from fastapi.encoders import jsonable_encoder
 from ..logger.logger import Logger
 from ..models.chat_message import ChatMessage
 from ..models.room import Room
@@ -21,7 +20,6 @@ class MessagingManager:
         self.active_connections: dict[str, set[WebSocket]] = {}
         self.logger = Logger("MessagingManager")
 
-
     async def connect(self, websocket: WebSocket, room: Room):
         '''
             Adds the connection to the active connections
@@ -30,13 +28,12 @@ class MessagingManager:
         await websocket.accept()
         if room not in self.active_connections:
             self.active_connections[room] = set()
-        
+
         if websocket in self.active_connections[room]:
             return True
-        
+
         self.active_connections[room].add(websocket)
         return False
-        
 
     def disconnect(self, websocket: WebSocket, room_id: str):
         '''
