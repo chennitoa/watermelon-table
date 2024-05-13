@@ -21,7 +21,7 @@ export default function ListingsPage() {
   const [description, setDescription] = useState('');
   const [listings, setListings] = useState([]);
   const [currentUsername, setUsername] = useState('');
-  // const [currentUserId, setUserId] = useState(0);
+  const [currentUserId, setUserId] = useState(0);
   const [confirmationMessage, setConfirmationMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);
@@ -38,7 +38,7 @@ export default function ListingsPage() {
         else {
           setLoggedIn(true);
           setUsername(user.username);
-          // setUserId(user.result.user_id);
+          setUserId(user.result.user_id);
         } 
         
       } catch (error) {
@@ -160,7 +160,7 @@ export default function ListingsPage() {
             <Grid container spacing={3}>
               {listings && listings.map((listing, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
-                  <ListingCard listing={listing} />
+                  <ListingCard listing={listing} currentUserId={currentUserId} />
                 </Grid>
               ))}
             </Grid>

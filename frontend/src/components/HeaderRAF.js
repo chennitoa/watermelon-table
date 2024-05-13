@@ -10,6 +10,7 @@ import { getCurrentUser, getProfile } from "../client";
 
 function HeaderRAF() {
   const [currentUsername, setUsername] = useState('');
+  const [currentUserId, setUserId] = useState(0);
   const [profilePicture, setProfilePicture] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);
 
@@ -24,6 +25,7 @@ function HeaderRAF() {
         else {
           setLoggedIn(true);
           setUsername(user.username);
+          setUserId(user.user_id);
           const data = await getProfile(user.username);
           setProfilePicture(data['result']['profile_picture']);
         }      
@@ -56,7 +58,7 @@ function HeaderRAF() {
     >
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         {loggedIn ? (
-          <Button component={Link} to="/dms" variant="contained" startIcon={<MessageIcon />}>
+          <Button component={Link} to={`/dms/${currentUserId}`} variant="contained" startIcon={<MessageIcon />}>
             My DMs
           </Button>
         ) : (
