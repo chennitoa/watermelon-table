@@ -155,11 +155,12 @@ function SignUp() {
         // else {
         //   setErrorMessage('');
         // }
+          
         const userResponse = await createUser(userData);
         console.log('User created:', userResponse);
 
         const result = await login(data.get('username'), data.get('password'));
-
+        console.log()
         localStorage.setItem('token', result.access_token);
 
         const profileResponse = await updateProfile(profileData);
