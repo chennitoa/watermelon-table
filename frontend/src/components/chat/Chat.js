@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {send_websocket_message, connect_to_room} from "../../script.js";
 import { useParams, useLocation } from 'react-router-dom';
-import { getUserWithUserId } from '../../client'
 import Box from '@mui/material/Box';
 import HeaderRAF from '../HeaderRAF';
 
@@ -14,17 +13,6 @@ const Chat = () => {
     const { senderId, receiverId } = useParams();
 
     useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-              const user = await getUserWithUserId();
-            } catch (error) {
-              console.error('Failed to fetch profile:', error);
-            }
-          };
-        console
-        if (receiverUsername === null) {
-            fetchProfile();
-        }
         connect_to_room(senderId, receiverId, setServerMessages);
     }, []);
 
