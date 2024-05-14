@@ -38,7 +38,7 @@ export default function ListingsPage() {
         else {
           setLoggedIn(true);
           setUsername(user.username);
-          setUserId(user.result.user_id);
+          setUserId(user.user_id);
         } 
         
       } catch (error) {
